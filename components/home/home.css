@@ -1,0 +1,23 @@
+.menu-container {
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-end;
+    margin: 0;
+    background-image: linear-gradient(to right, black, grey);
+    padding: 1em;
+    gap: 15px;
+}
+
+.menu-container a {
+    text-decoration: none;
+}
+
+
+.home {
+    flex: 60%;
+    color: white;
+}
+
+.nav-menu {
+    color: white;
+}
