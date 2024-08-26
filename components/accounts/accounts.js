@@ -1,56 +1,113 @@
-const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-function gridElement(name="Account Name", balance=50.0) {
-    const accountGridDiv = document.createElement("div");
-    accountGridDiv.setAttribute("class", "account-grid");
+var currency = "$";
+var types = {"savings": {"under_info": "AVAILABLE BALANCE", "button_info": "View Account"}, "rewards": {"under_info": "REWARDS CASH", "button_info": "View Rewards"}, "credit": {"under_info": "CURRENT BALANCE", "button_info": "Pay bill"}};
 
-    const accountBoxDiv = document.createElement("div");
-    accountBoxDiv.setAttribute("class", "account-box");
+function addCommasToNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+var accountBackgroundColors = ["rgb(38,66,97)", "rgb(22, 96, 133)", "rgb(37, 41, 43)", "linear-gradient( rgba(0,0,0,.5), rgba(0,0,0,.6) ),url(../Images/stars_1.jpeg)"]; // linear-gradient( rgba(0,0,0,.5), rgba(0,0,0,.5) ),url(./stars_1.jpeg)
+var createAccount = function (name, balance, type, backgroundOption) {
+    const div3 = document.createElement("div");
 
-    const viewAccountButton = document.createElement("button");
-    viewAccountButton.innerHTML = ' <a href="home.html">View Account</a> ';
-    viewAccountButton.setAttribute("class", "view-account-button");
+    div3.setAttribute("class", "account1");
 
-    const accountInfoDiv = document.createElement("div");
-    accountInfoDiv.setAttribute("class", "account-info");
+    if (accountBackgroundColors[backgroundOption].includes(".jpeg")) {
+        console.log(accountBackgroundColors[backgroundOption]);
+        div3.style.backgroundImage = accountBackgroundColors[backgroundOption];
+    } else {
+        div3.style.backgroundColor = accountBackgroundColors[backgroundOption];
+    }
 
-    const accountBalanceText = document.createElement("p");
-    const balanceTextNode = document.createTextNode(formatter.format(balance));
-    accountBalanceText.appendChild(balanceTextNode);
+    const div2 = document.createElement("div");
 
-    const accountNameText = document.createElement("p");
-    const nameTextNode = document.createTextNode(name);
-    accountNameText.appendChild(nameTextNode);
+    div2.setAttribute("class", "accountbutton");
 
-    accountInfoDiv.appendChild(accountNameText);
-    accountInfoDiv.appendChild(accountBalanceText);
-    accountBoxDiv.appendChild(accountInfoDiv);
+    const div1 = document.createElement("div");
 
-    accountBoxDiv.appendChild(viewAccountButton);
+    div1.setAttribute("class", "accountinfo");
 
-    accountGridDiv.appendChild(accountBoxDiv);
+    const button1 = document.createElement("button");
 
-    var wrapper = document.getElementById("grid-wrapper")
-    wrapper.appendChild(accountGridDiv);
-}      
+    const p4 = document.createElement("p");
 
-gridElement("Savings", 20000.0)
-gridElement("Checkings", 20000.0)
-gridElement("Business", 20000.0)
+    const node3 = document.createTextNode(types[type]["under_info"]);
 
-/* Grid code
-<div class="account-grid">
-                <div class="account-box">
-                    <div class="account-info">
-                        <p>Account Name</p>
-                        <p>$50.00</p>
-                    </div>
-                    <button class="view-account-button">
-                        <a href="home.html">View Account</a>
-                    </button>
-                </div>
-            </div>
+    p4.appendChild(node3);
+
+    p4.setAttribute("class", "balance-info");
+
+    const p3 = document.createElement("p");
+
+    var writtenBalance = addCommasToNumber(Math.floor(balance));
+
+    var cents = Math.round((balance - Math.floor(balance)) * 100);
+
+    p3.innerHTML = '<span class="currency">' + currency + '</span>' + writtenBalance + '<span class="cents">' + cents + '</span>';
+
+    p3.setAttribute("class", "balance");
+
+    const p2 = document.createElement("p");
+
+    const node2 = document.createTextNode(name);
+
+    p2.appendChild(node2);
+
+    p2.setAttribute("class", "heading");
+
+    const p1 = document.createElement("p");
+
+    const node1 = document.createTextNode(types[type]["button_info"]);
+
+    p1.appendChild(node1);
+
+    button1.appendChild(p1);
+
+    div1.appendChild(p2);
+
+    div1.appendChild(p3);
+
+    div1.appendChild(p4);
+
+    div2.appendChild(button1);
+
+    div3.appendChild(div1);
+
+    div3.appendChild(div2);
+
+    var element = document.getElementById("accountholder");
+
+    element.appendChild(div3);
+}
+var createBlankAccount = function () {
+
+    var div1 = document.createElement("div");
+
+    div1.setAttribute("class", "account1");
+
+    div1.style.visibility = "hidden";
+
+    var element = document.getElementById("accountholder");
+
+    element.appendChild(div1);
+}
+createAccount("Savings", 12000.28, "savings", 0);
+createAccount("Credit Card", 80.78, "credit", 1);
+createAccount("Rewards", 80.78, "rewards", 3);
+createBlankAccount();
+
+
+
+/*
+<div class="account1">
+    <div class="accountinfo">
+        <p class="heading">Savings</p>
+        <p class="balance"><span class="currency">$</span>12,000<span class="cents">00</span></p>
+        <p class="balance-info">AVAILABLE BALANCE</p>
+    </div>
+    <div class="accountbutton">
+        <button><p>View Rewards</p></button>
+    </div>
+</div>
 */
 
-
-// add
+    

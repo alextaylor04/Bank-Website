@@ -1,19 +1,8 @@
-.account-grid {
-    height: 150px;
-    width: 300px;
-
-    margin: 10px;
-
-    border: solid 1px grey;
-    background-color: lightgray;
+body {
+    margin: 0;
+    padding: 0;
 }
 
-.account-box {
-    /* display: flex;
-    flex-flow: row wrap; */
-    /* gap: 10px; */
-    margin: 10px;
-}
 
 .nav-bar {
     display: flex;
@@ -31,28 +20,112 @@
     color: white;
 }
 
-.view-account-button {
-    height: 30px;
-    width: 100px;
-    border: solid 1px grey
-}
 
-.view-account-button a {
 
-    color: black;
-    text-decoration: none;
-    text-align: center;
-}
 
-.account-info {
- /* Consider Adding Text Color & Font*/
- color: black;
-}
-
-.div-container {
+.accountholder {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     display: flex;
-    flex-flow: row wrap;
-    height: 80%;
-    width: 80%;
-    gap: 1%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    gap: 25px;
+    margin-top: 40px;
+}
+.account1 {
+    width: 40%;
+    height: 180px;
+    background-color: rgb(37, 41, 43);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+    color: white;
+    display: flex;
+    flex-direction: row;
+}
+.account1:hover {
+    cursor: pointer;
+}
+.accountinfo {
+    width: 50%;
+}
+.accountbutton {
+    width: 50%;
+    height: 180px;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding-right: 25px;
+}
+.accountbutton button {
+    font-size: 19px;
+    width: 155px;
+    height: 45px;
+    background-color: transparent;
+    color: rgb(255, 255, 255);
+    border: 3px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.accountbutton button:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.account1 .heading{
+    margin-top: 20px;
+    margin-bottom: 0px;
+    margin-left: 20px;
+    font-size: 20px;
+}
+.account1 .balance {
+    font-size: 40px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+    margin-left: 20px;
+}
+.account1 .currency {
+    font-size: 25px;
+    vertical-align: 12px;
+    margin-right: 1px;
+}
+.account1 .cents {
+    font-size: 20px;
+    vertical-align: super;
+}
+.account1 .balance-info {
+    margin-top: 5px;
+    margin-left: 20px;
+    font-size: 13px;
+}
+
+
+
+
+@media(max-width: 1000px) {
+    .accountholder {
+        flex-direction: column;
+        align-items: center;
+    }
+    .account1 {
+        width: 60%;
+    }
+}
+
+@media(max-width: 700px) {
+    .account1 {
+        flex-direction: column;
+        align-items: center;
+        height: 195px;
+    }
+    .accountinfo {
+        width: 100%;
+    }
+    .accountbutton {
+        width: 70%;
+        margin-bottom: 20px;
+    }
+    .accountbutton button {
+        width: 100%;
+    }
 }
