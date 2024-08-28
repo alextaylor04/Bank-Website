@@ -101,6 +101,160 @@ body {
 
 
 
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 50px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+  
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    height: 500px;
+}
+  
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.modalMoney {
+    border-radius: 50%;
+    width: 75px;
+    height: 75px;
+    
+}
+.center {
+    width: 100%;
+    text-align: center;
+}
+.payment {
+    font-size: 30px;
+}
+.moneybox {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    background-color: lightgrey;
+    width: 90%;
+    height: 50px;
+    margin: auto;
+    margin-top: 10px;
+    border-radius: 3px;
+    border: none;
+}
+.moneybox:hover {
+    background-color: rgb(194, 194, 194);
+    cursor: pointer;
+}
+.moneytitleholder {
+    font-size: 15px;
+    text-align: right;
+    margin-left: 5%;
+    width: 10%;
+}
+.balancetitleholder {
+    font-size: 14px;
+    text-align: right;
+    width: 40%;
+    margin-left: 42%;
+}
+.selected {
+    border: 1px solid grey;
+}
+.continue {
+    font-size: 20px;
+    width: 92%;
+    height: 50px;
+    color: white;
+    background-color: rgb(158, 158, 158);
+    margin: auto;
+    margin-top: 10px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.green_continue {
+    background-color: rgb(27, 143, 27);
+}
+.green_continue:hover {
+    cursor: pointer;
+    background-color: rgb(33, 162, 33);
+}
+.customamountholder {
+    display: flex;
+    flex-direction: row;
+    width: 85%;
+    height: 50px;
+    background-color: white;
+    border: 1px solid grey;
+    padding-left: 20px;
+    border-radius: 3px;
+    margin: auto;
+}
+.custom-amount {
+    width: 90%;
+    height: 50px;
+    background-color: transparent;
+    border: none;
+}
+.custom-amount:focus, input:focus{
+    outline: none;
+}
+.custom-text {
+    font-size: 15px;
+    float: left;
+    margin: 0;
+    margin-bottom: 4px;
+    margin-left: 5%;
+}
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.createaccount {
+    font-size: 20px;
+    width: 30%;
+    height: 50px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    background-color: rgb(242, 242, 242);
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    margin-top: 20px;
+}
+.createaccount:hover {
+    background-color: rgb(224, 223, 223);
+    cursor: pointer;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+  
 
 @media(max-width: 1000px) {
     .accountholder {
