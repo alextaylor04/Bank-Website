@@ -1,0 +1,138 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+header {
+    width: 100%;
+    height: 150px;
+    color: white;
+    text-align: center;
+}
+header h1 {
+    padding-top: 10px;
+}
+.balance {
+    font-size: 40px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+.currency {
+    font-size: 25px;
+    vertical-align: 12px;
+    margin-right: 1px;
+}
+.cents {
+    font-size: 20px;
+    vertical-align: super;
+}
+
+.transaction {
+    width: 80%;
+    height: 100px;
+    background-color: lightgrey;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto;
+    margin-bottom: 0;
+    border: 1px solid rgb(183, 182, 182);
+}
+.arrowholder {
+    width: 2%;
+    margin-left: 2%;
+}
+.arrowwiden {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.iconholder {
+    width: 3%;
+    margin-left: 2%;
+}
+.icon {
+    width: 42px;
+}
+.dateholder {
+    width: 8%;
+    display: flex;
+    flex-direction: column;
+    column-gap: 0px;
+    align-items: center;
+    justify-content: center;
+}
+.month {
+    margin-bottom: 3px;
+}
+.day {
+    margin-top: 3px;
+    font-size: 20px;
+}
+.descholder {
+    width: 29%;
+    text-align: left;
+    margin-left: 5%;
+    font-size: 19px;
+}
+.categoryholder {
+    width: 20%;
+    text-align: left;
+    margin-left: 4%;
+    font-size: 18px;
+}
+.cardholder {
+    width: 13%;
+    text-align: left;
+    margin-left: 1%;
+    margin-right: 3%;
+    font-size: 18px;
+}
+.amountholder {
+    width: 6%;
+    text-align: right;
+    font-size: 18px;
+}
+.transactioninfo {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    color: rgb(32, 115, 171);
+    margin: auto;
+    font-size: 13px;
+}
+.dateinfo {
+    margin-left: 6.5%;
+}
+.descinfo {
+    margin-left: 12.5%;
+}
+.categoryinfo {
+    margin-left: 24.5%;
+}
+.cardinfo {
+    margin-left: 14.5%;
+}
+.amountinfo {
+    margin-left: 13%;
+}
+.arrowwiden:hover {
+    cursor: pointer;
+}
+.hiddeninfo {
+    width: 80%;
+    height: 60px;
+    background-color: rgb(222, 219, 219);
+    margin: auto;
+    display: none;
+    margin-top: 0px;
+    font-size: 20px;
+    flex-direction: row;
+    border: 1px solid rgb(183, 182, 182);
+    border-top: none;
+}
+.hiddendate {
+    margin-left: 10px;
+}
