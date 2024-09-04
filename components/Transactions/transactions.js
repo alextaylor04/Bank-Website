@@ -1,16 +1,26 @@
 var currency = "$";
 
-function transaction (date, logourl, description, category, card, amount) {
-    this.date = date;
+function Transaction (date, logourl, description, category, card, amount) {
+    this.customdate = new CustomDate(date[0], date[1], date[2], date[3], date[4]);
     this.logourl = logourl;
     this.description = description;
     this.category = category;
     this.card = card;
     this.amount = amount;
     this.state = "off";
+    this.bottomstate = "none";
+    this.topstate = "none";
 }
-transactioncounter = 0;
-transaction.prototype.printOnScreen = function (surrond_state) {
+var transactioncounter = 0;
+var transactionBorderRadius;
+function getTransBorder() {
+    var r = document.querySelector(':root');
+    var rs = getComputedStyle(r);
+    transactionBorderRadius = rs.getPropertyValue('--blue');
+}
+getTransBorder();
+
+Transaction.prototype.printOnScreen = function (surrond_state) {
     const div10 = document.createElement("div");
 
     div10.id = "hiddeninfo" + transactioncounter;
@@ -19,7 +29,18 @@ transaction.prototype.printOnScreen = function (surrond_state) {
 
     const div9 = document.createElement("div");
 
+    div9.id = "transaction" + transactioncounter;
+
     div9.setAttribute("class", "transaction");
+
+    if (this.bottomstate === "no rounding") {
+        div9.style.borderBottomRightRadius = "0px";
+        div9.style.borderBottomLeftRadius = "0px";
+    }
+    if (this.topstate === "no rounding") {
+        div9.style.borderTopRightRadius = "0px";
+        div9.style.borderTopLeftRadius = "0px";
+    }
 
     const p7 = document.createElement("p");
 
@@ -160,30 +181,45 @@ transaction.prototype.printOnScreen = function (surrond_state) {
 
     transactioncounter++;
 }
-transaction.prototype.getYear = function () {
-    // return this.date.getYear();
-}
-transaction.prototype.getState = function () {
+Transaction.prototype.getState = function () {
     return this.state;
 }
-transaction.prototype.updateState = function (state) {
+Transaction.prototype.updateState = function (state) {
     this.state = state;
 }
-function date(day, month, year, hour, second) {
-    this.year = year
+function CustomDate(day, month, year, hour, second) {
+    this.year = year;
     this.day = day;
     this.month = month;
     this.hour = hour;
     this.second = second;
 }
-date.prototype.getYear = function () {
+
+CustomDate.prototype.getYear = function () {
     return this.year;
 }
-var transactions = [new transaction(new date(2024, 12, "August", 17, 14), "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59), new transaction(new date(2024, 12, "August", 17, 14), "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59), new transaction(new date(2024, 12, "August", 17, 14), "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59)];
+Transaction.prototype.getYear = function () {
+    return this.customdate.getYear();
+}
+var transactions = [
+    new Transaction([12, 8, 2024, 17, 14], "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59),
+    new Transaction([12, 8, 2024, 17, 14], "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59),
+    new Transaction([12, 8, 2024, 17, 14], "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59)
+];
 for (var i = 0; i < transactions.length; i++) {
-    var surround_state;
     if (i + 1 < transactions.length) {
-        // make get year work
+        if (transactions[i + 1].getYear() === transactions[i].getYear()) {
+            transactions[i].bottomstate = "no rounding";
+        } else {
+            transactions[i].bottomstate = "rounding";
+        }
+    }
+    if (i - 1 >= 0) {
+        if (transactions[i - 1].getYear() === transactions[i].getYear()) {
+            transactions[i].topstate = "no rounding";
+        } else {
+            transactions[i].topstate = "rounding";
+        }
     }
     transactions[i].printOnScreen();
 }
@@ -191,14 +227,21 @@ for (var i = 0; i < transactions.length; i++) {
 
 var openTransaction = function (num) {
     var state = transactions[num].getState();
+    var transactionvar = document.getElementById("transaction" + num);
     var hiddeninfo = document.getElementById("hiddeninfo" + num);
     var arrow = document.getElementById("arrow" + num);
     if (state === "off") {
+        transactionvar.style.borderBottomRightRadius = "0px";
+        transactionvar.style.borderBottomLeftRadius = "0px";
         hiddeninfo.style.display = "flex";
         transactions[num].updateState("clicked")
         arrow.classList.remove("fa-chevron-down");
         arrow.classList.add("fa-chevron-right");
     } else if (state === "clicked") {
+        if (transactions[num].bottomstate === "rounding" || transactions[num].bottomstate === "none") {
+            transactionvar.style.borderBottomRightRadius = transactionBorderRadius;
+            transactionvar.style.borderBottomLeftRadius = transactionBorderRadius;
+        }
         hiddeninfo.style.display = "none";
         transactions[num].updateState("off")
         arrow.classList.remove("fa-chevron-right");
@@ -271,3 +314,11 @@ if (backNum != undefined) {
 - variable to be used for image icon
     - Ex: Mcdonald's is 1, Casey's is 2, etc.
 */
+
+
+
+
+
+
+
+
