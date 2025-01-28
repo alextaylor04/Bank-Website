@@ -26,8 +26,12 @@ var createAccountonScreen = function (name, balance, type, backgroundOption) {
     var tempnum = accountcounter;
 
     div3.setAttribute("class", "account1");
-
-    div3.onclick = function () {setTimeout(function () {openNewFile(tempnum);}, 50);}
+    console.log(type);
+    if (type != "rewards") {
+      div3.onclick = function () {setTimeout(function () {openAccountFile(tempnum);}, 50);}
+    } else {
+      div3.onclick = function () {}
+    }
 
     if (accountBackgroundColors[backgroundOption].includes(".jpeg") || accountBackgroundColors[backgroundOption].includes(".jpg")) {
       div3.style.backgroundImage = accountBackgroundColors[backgroundOption];
@@ -55,8 +59,10 @@ var createAccountonScreen = function (name, balance, type, backgroundOption) {
 
       button1.onclick = function () { filechecker = 1; accountnum = tempnum; openModal(1); };
 
+    } else if (type != "rewards") {
+      button1.onclick = function () {openAccountFile(tempnum); };
     } else {
-      button1.onclick = function () {openNewFile(tempnum); };
+      button1.onclick = function () {}
     }
 
     const p4 = document.createElement("p");
@@ -123,7 +129,7 @@ var createBlankAccount = function () {
 
 
 
-var openNewFile = function (num) {
+var openAccountFile = function (num) {
   if (filechecker === 0) {
     localStorage.setItem("account", JSON.stringify(accountList[num]));
     localStorage.setItem("backColor", accountList[num]["backColor"])
@@ -181,7 +187,7 @@ for (var i = 0; i < accountList.length; i++) {
 
 
 
-// make savings and checkings default, then add a credit card (which adds savings) for video
+
 
 var AccountListContainsRewards = function () {
   for (var i = 0; i < accountList.length; i++) {

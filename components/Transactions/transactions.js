@@ -18,9 +18,122 @@ function getTransBorder() {
     var rs = getComputedStyle(r);
     transactionBorderRadius = rs.getPropertyValue('--blue');
 }
-getTransBorder();
+/*
+Savings
+Date (Image) Description Category Amount Balance
 
-Transaction.prototype.printOnScreen = function (surrond_state) {
+Credit Card
+Date (Image) Description Category Card Amount
+
+Checking
+Date (Image) Description Category Amount Balance
+
+
+
+Checking
+- Date transaction happened
+- Description of where money goes to/comes from
+    - Company
+    - Location (if useful)
+    - Last 4 digits of Account # (if coming from a bank)
+- Amount of transaction
+- Category:
+    - Check, Deposit, Debit Card, Transfer
+- Image
+- new Balance
+- Check info (if check was used for transaction)
+
+
+Savings
+- Date transaction happened
+- Description of where money goes to/comes from
+    - Company
+    - Interest (if it's the interest from that account)
+    - Last 4 digits of Account # (if coming from a bank)
+- Amount of transaction
+- Category:
+    - Interest, Withdraw, Deposit, Transfer
+- Image
+- new Balance
+
+
+Credit Card
+- Date transaction happened
+- Description of where money goes to/comes from
+    - Company
+    - Location (if useful)
+    - Last 4 digits of Account # (if coming from a bank)
+- Amount of transaction
+- Category:
+    - Examples: Gas, Restaurant, Payment, etc.
+- Card number
+- Image
+
+*/
+getTransBorder();
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
+const monthsShort = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+];
+var getMonthString = function (month) {
+    return months[month];
+}
+var getShortMonthString = function (month) {
+    return monthsShort[month];
+}
+function getDaySuffix(day) {
+    if (day >= 11 && day <= 13) {
+      return 'th'; 
+    }
+  
+    const lastDigit = day % 10;
+    switch (lastDigit) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+}
+function formatDayString(day) {
+    if (day < 10) {
+      return `0${day}`;
+    } else {
+      return `${day}`;
+    }
+}
+function formatToUSD(amount) {
+    return `$${amount.toFixed(2)}`;
+}
+
+Transaction.prototype.printOnScreen = function () {
     const div10 = document.createElement("div");
 
     div10.id = "hiddeninfo" + transactioncounter;
@@ -44,7 +157,7 @@ Transaction.prototype.printOnScreen = function (surrond_state) {
 
     const p7 = document.createElement("p");
 
-    const node7 = document.createTextNode("Purchase date: August 12th, 2024 17:24");
+    const node7 = document.createTextNode("Purchase date: " + getMonthString(this.getMonth()) + " " + this.getDay() + getDaySuffix(this.getDay()) + ", " + this.getYear() + " " + this.getHour() + ":" + this.getSecond());
 
     p7.appendChild(node7);
 
@@ -80,7 +193,7 @@ Transaction.prototype.printOnScreen = function (surrond_state) {
 
     const p6 = document.createElement("p");
 
-    const node6 = document.createTextNode("$14.53");
+    const node6 = document.createTextNode(formatToUSD(this.amount));
 
     p6.appendChild(node6);
 
@@ -88,7 +201,7 @@ Transaction.prototype.printOnScreen = function (surrond_state) {
 
     const p5 = document.createElement("p");
 
-    const node5 = document.createTextNode("12345");
+    const node5 = document.createTextNode(this.card);
 
     p5.appendChild(node5);
 
@@ -96,7 +209,7 @@ Transaction.prototype.printOnScreen = function (surrond_state) {
 
     const p4 = document.createElement("p");
 
-    const node4 = document.createTextNode("Dining");
+    const node4 = document.createTextNode(this.category);
 
     p4.appendChild(node4);
 
@@ -104,7 +217,7 @@ Transaction.prototype.printOnScreen = function (surrond_state) {
 
     const p3 = document.createElement("p");
 
-    const node3 = document.createTextNode("Casey's General Store");
+    const node3 = document.createTextNode(this.description);
 
     p3.appendChild(node3);
 
@@ -118,7 +231,7 @@ Transaction.prototype.printOnScreen = function (surrond_state) {
 
     const p2 = document.createElement("p");
 
-    const node2 = document.createTextNode("08");
+    const node2 = document.createTextNode(formatDayString(this.getDay()));
 
     p2.appendChild(node2);
 
@@ -126,7 +239,7 @@ Transaction.prototype.printOnScreen = function (surrond_state) {
 
     const p1 = document.createElement("p");
 
-    const node1 = document.createTextNode("Aug");
+    const node1 = document.createTextNode(getShortMonthString(this.getMonth()));
 
     p1.appendChild(node1);
 
@@ -198,14 +311,117 @@ function CustomDate(day, month, year, hour, second) {
 CustomDate.prototype.getYear = function () {
     return this.year;
 }
+CustomDate.prototype.getMonth = function () {
+    return this.month;
+}
+CustomDate.prototype.getDay = function () {
+    return this.day;
+}
+CustomDate.prototype.getHour = function () {
+    return this.hour;
+}
+CustomDate.prototype.getSecond = function () {
+    return this.second;
+}
+
 Transaction.prototype.getYear = function () {
     return this.customdate.getYear();
 }
-var transactions = [
+Transaction.prototype.getMonth = function () {
+    return this.customdate.getMonth();
+}
+Transaction.prototype.getDay = function () {
+    return this.customdate.getDay();
+}
+Transaction.prototype.getHour = function () {
+    return this.customdate.getHour();
+}
+Transaction.prototype.getSecond = function () {
+    return this.customdate.getSecond();
+}
+
+var transactions = [ // day month year hour second
     new Transaction([12, 8, 2024, 17, 14], "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59),
-    new Transaction([12, 8, 2024, 17, 14], "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59),
-    new Transaction([12, 8, 2024, 17, 14], "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", "12345", 10.59)
+    new Transaction([7, 3, 2023, 9, 54], "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", "12345", 12.11),
+    new Transaction([24, 6, 2023, 3, 34], "https://i.imgur.com/oyD6it3.png", "Love's", "Gas", "12345", 13.00)
 ];
+
+var printYearGap = function (year) {
+    const h1 = document.createElement("h1");
+    const node1 = document.createTextNode(year + " Transactions");
+    h1.appendChild(node1);
+    h1.setAttribute("class", "yearGap");
+    var element = document.getElementById("transactionholder");
+    element.appendChild(h1);
+}
+
+/*
+createTitles function
+- creates the blue titles for all the transactions
+*/
+var createTitles = function () {
+    const div1 = document.createElement("div");
+
+    div1.setAttribute("class", "transactioninfo");
+
+    const p5 = document.createElement("p");
+
+    const node5 = document.createTextNode("AMOUNT");
+
+    p5.appendChild(node5);
+
+    p5.setAttribute("class", "amountinfo");
+
+    const p4 = document.createElement("p");
+
+    const node4 = document.createTextNode("CARD");
+
+    p4.appendChild(node4);
+
+    p4.setAttribute("class", "cardinfo");
+
+    const p3 = document.createElement("p");
+
+    const node3 = document.createTextNode("CATEGORY");
+
+    p3.appendChild(node3);
+
+    p3.setAttribute("class", "categoryinfo");
+
+    const p2 = document.createElement("p");
+
+    const node2 = document.createTextNode("DESCRIPTION");
+
+    p2.appendChild(node2);
+
+    p2.setAttribute("class", "descinfo");
+
+    const p1 = document.createElement("p");
+
+    const node1 = document.createTextNode("DATE");
+
+    p1.appendChild(node1);
+
+    p1.setAttribute("class", "dateinfo");
+
+    div1.appendChild(p1);
+
+    div1.appendChild(p2);
+
+    div1.appendChild(p3);
+
+    div1.appendChild(p4);
+
+    div1.appendChild(p5);
+
+    var element = document.getElementById("transactionholder");
+
+    element.appendChild(div1);
+}
+
+var currentYear = transactions[0].getYear();
+printYearGap(currentYear);
+createTitles();
 for (var i = 0; i < transactions.length; i++) {
     if (i + 1 < transactions.length) {
         if (transactions[i + 1].getYear() === transactions[i].getYear()) {
@@ -221,10 +437,19 @@ for (var i = 0; i < transactions.length; i++) {
             transactions[i].topstate = "rounding";
         }
     }
+    if (transactions[i].getYear() != currentYear) {
+        currentYear = transactions[i].getYear();
+        printYearGap(currentYear);
+        createTitles();
+    }
     transactions[i].printOnScreen();
 }
 
 
+/*
+openTransaction function
+- Happens when you click on an arrow to view more info for that transaction
+*/
 var openTransaction = function (num) {
     var state = transactions[num].getState();
     var transactionvar = document.getElementById("transaction" + num);
@@ -250,8 +475,7 @@ var openTransaction = function (num) {
     
 }
 
-// when adding to transactions need to make border-radius only apply to correct corners.
-// Also need to make year thing work
+
 
 
 
@@ -268,52 +492,51 @@ function getCents (number) {
   return cents;
 }
 
-var temp = JSON.parse(localStorage.getItem("account"));
-if (temp != undefined) {
-    var type = temp["type"]
-    var headerName = document.getElementById("headerName");
-    headerName.innerHTML = type;
-    if (type != "Credit Card" || type != "Rewards") {
-        var balance = document.getElementById("balance");
-        var numBalance = temp["balance"]
-        balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
-        ;
-    }
-}
-var heading = document.getElementById("heading")
-var backNum = localStorage.getItem("backColor")
-if (backNum != undefined) {
-    var backColor = accountBackgroundColors[backNum];
-    if (backColor.includes(".jpeg") || backColor.includes(".jpg")) {
-    heading.style.backgroundImage = backColor;
-    if (backNum === 4) {
-        heading.style.backgroundSize = "cover";
-    }
-    
-    } else {
-    
-    heading.style.backgroundColor = backColor;
-    
-    }
-}
-// localStorage.removeItem("imagenum1");
-
-
-
-
 
 /*
-- Date
-- Company Name
-    - Ex: Casey's General Store
-    - Ex: Checking Account (like if you were to pay off your credit card from your checking)
-    - Ex: PNC Bank
-- category (Ex: dining, gas, payment, etc.)
-- card number
-- amount (negative # if it's sent out)
-- variable to be used for image icon
-    - Ex: Mcdonald's is 1, Casey's is 2, etc.
+loadInAccountInfo function
+- Loads in the account info sent to the transaction page
 */
+var loadInAccountInfo = function () {
+    var temp = JSON.parse(localStorage.getItem("account"));
+    if (temp != undefined) {
+        var type = temp["type"]
+        var headerName = document.getElementById("headerName");
+        headerName.innerHTML = type;
+        console.log(type == "Credit Card");
+        var balance = document.getElementById("balance");
+        if (type == "Savings" || type == "Checking") {
+            var numBalance = temp["balance"]
+            balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
+        } else if (type == "Credit Card") {
+            var numBalance = temp["current-balance"]
+            balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
+        }
+    }
+    var heading = document.getElementById("heading")
+    var backNum = localStorage.getItem("backColor")
+    if (backNum != undefined) {
+        var backColor = accountBackgroundColors[backNum];
+        if (backColor.includes(".jpeg") || backColor.includes(".jpg")) {
+        heading.style.backgroundImage = backColor;
+        if (backNum === 4) {
+            heading.style.backgroundSize = "cover";
+        }
+        
+        } else {
+        
+        heading.style.backgroundColor = backColor;
+        
+        }
+    }
+}
+loadInAccountInfo();
+
+
+
+
+
+
 
 
 
