@@ -25,7 +25,8 @@ body {
 }
 .input-box {
     height: 50px;
-    margin: 30px 5px; 
+    margin-left: 5px;
+    margin-right: 5px; 
     display: flex;
     flex-direction: row;
     width: 95%;
@@ -47,6 +48,27 @@ body {
 
 .input-box input::placeholder {
     color: grey;
+}
+
+.normalbox {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.errorTop {
+    margin-top: 10px;
+}
+.errorBottom {
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+    display: none;
+}
+
+.bottomMargin {
+    margin-bottom: 15px;
 }
 
 .login {

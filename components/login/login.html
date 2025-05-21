@@ -13,14 +13,16 @@
         <div class="loginwrapper">
             <form id="loginForm">
                 <h1>Login</h1> 
-                <div class="input-box" onclick="formelemPressed('username')" id="usernameholder">
+                <div class="input-box normalbox" onclick="formelemPressed('username')" id="usernameholder">
                     <i class='bx bxs-user'></i>
                     <input type="text" placeholder="Username" id="username" required>
                 </div>
-                <div class="input-box" onclick="formelemPressed('password')" id="passwordholder">  
+                <p class="error" id="usernameError">Username does not exist</p>
+                <div class="input-box normalbox" onclick="formelemPressed('password')" id="passwordholder">  
                     <i class='bx bxs-lock-alt' ></i>                
                     <input type="password" placeholder="Password" id="password" required>
                 </div>
+                <p class="error bottomMargin" id="passwordError">Password is incorrect</p>
                 <button type="submit" class="login">Login</button>
             </form>
         </div>

@@ -2,9 +2,68 @@ body {
     margin: 0;
     padding: 0;
 }
+
+
 :root {
     --transborder: 5px;
+
+    /*
+    Transactions is split up into multiple divs, where each div holds a different value(date, image, amount, etc.).
+    The margins and widths of those divs are listed below:
+    */
+
+    /* Regular Transactions Variables */
+
+    --arrow-margin-left: 2%;
+    --arrow-width: 2%;
+
+    --date-width: 8%;
+
+    --icon-margin-left: 2%;
+    --icon-width: 3%;
+
+    --desc-margin-left: 5%;
+    --desc-width: 29%;
+
+    /* Saving Transactions Variables */
+
+    --saving-categ-margin-left: 4%;
+    --saving-categ-width: 20%;
+
+    --saving-amount-width: 10%;
+    --saving-amount-margin-right: 2%;
+
+    --saving-balance-margin-left: 1%;
+    --saving-balance-width: 12%;
+    --saving-balance-margin-right: 2%;
+
+    /* Checking Transactions Variables */
+
+    --checking-categ-margin-left: 4%;
+    --checking-categ-width: 20%;
+
+    --checking-amount-width: 10%;
+    --checking-amount-margin-right: 2%;
+
+    --checking-balance-margin-left: 1%;
+    --checking-balance-width: 12%;
+    --checking-balance-margin-right: 2%;
+
+    /* Credit Transactions Variables */
+
+    --credit-categ-margin-left: 4%;
+    --credit-categ-width: 20%;
+
+    --credit-card-width: 13%;
+    --credit-card-margin-left: 1%;
+
+    --credit-amount-width: 10%;
+    --credit-amount-margin-right: 1.5%;
+
+
 }
+
+
 .yearGap {
     font-size: 20px;
     width: 80%;
@@ -42,7 +101,7 @@ header {
 header h1 {
     padding-top: 2px;
 }
-.balance {
+.accountBalance {
     font-size: 40px;
     margin-top: 10px;
     margin-bottom: 0px;
@@ -70,8 +129,8 @@ header h1 {
     border: 1px solid rgb(183, 182, 182);
 }
 .arrowholder {
-    width: 2%;
-    margin-left: 2%;
+    width: var(--arrow-margin-lef);
+    margin-left: var(--arrow-width);
 }
 .arrowwiden {
     width: 25px;
@@ -81,14 +140,14 @@ header h1 {
     align-items: center;
 }
 .iconholder {
-    width: 3%;
-    margin-left: 2%;
+    width: var(--icon-width);
+    margin-left: var(--icon-margin-left);
 }
 .icon {
     width: 42px;
 }
 .dateholder {
-    width: 8%;
+    width: var(--date-width);
     display: flex;
     flex-direction: column;
     column-gap: 0px;
@@ -103,29 +162,72 @@ header h1 {
     font-size: 20px;
 }
 .descholder {
-    width: 29%;
     text-align: left;
-    margin-left: 5%;
     font-size: 19px;
+    width: var(--desc-width);
+    margin-left: var(--desc-margin-left);
 }
 .categoryholder {
-    width: 20%;
     text-align: left;
-    margin-left: 4%;
     font-size: 18px;
 }
 .cardholder {
-    width: 13%;
     text-align: left;
-    margin-left: 1%;
-    margin-right: 3%;
     font-size: 18px;
 }
 .amountholder {
-    width: 6%;
     text-align: right;
     font-size: 18px;
 }
+.balanceholder {
+    text-align: right;
+    font-size: 18px;
+}
+
+.savingsTransaction .categoryholder {
+    width: var(--saving-categ-width);
+    margin-left: var(--saving-categ-margin-left);
+}
+
+.creditTransaction .categoryholder {
+    width: var(--credit-categ-width);
+    margin-left: var(--credit-categ-margin-left);
+}
+
+.checkingTransaction .categoryholder {
+    width: var(--checking-categ-width);
+    margin-left: var(--checking-categ-margin-left);
+}
+
+.creditTransaction .cardholder {
+    width: var(--credit-card-width);
+    margin-left: var(--credit-card-margin-left);
+}
+
+.savingsTransaction .amountholder {
+    width: var(--saving-amount-width);
+    margin-right: var(--saving-amount-margin-right);
+}
+.checkingTransaction .amountholder {
+     width: var(--checking-amount-width);
+    margin-right: var(--checking-amount-margin-right);
+}
+.creditTransaction .amountholder {
+    width: var(--credit-amount-width);
+    margin-right: var(--credit-amount-margin-right);
+}
+
+.savingsTransaction .balanceholder {
+    width: var(--saving-balance-width);
+    margin-left: var(--saving-balance-margin-left);
+    margin-right: var(--saving-balance-margin-right);
+}
+.checkingTransaction .balanceholder {
+    width: var(--checking-balance-width);
+    margin-left: var(--checking-balance-margin-left);
+    margin-right: var(--checking-balance-margin-right);
+}
+
 .transactioninfo {
     width: 80%;
     display: flex;
@@ -134,21 +236,54 @@ header h1 {
     margin: auto;
     font-size: 13px;
 }
-.dateinfo {
+.creditTitle .dateinfo {
     margin-left: 6.5%;
 }
-.descinfo {
+.creditTitle .descinfo {
     margin-left: 12.5%;
 }
-.categoryinfo {
+.creditTitle .categoryinfo {
     margin-left: 24.5%;
 }
-.cardinfo {
-    margin-left: 14.5%;
+.creditTitle .cardinfo {
+    margin-left: 14%;
 }
-.amountinfo {
+.creditTitle .amountinfo {
     margin-left: 13%;
 }
+
+.savingsTitle .dateinfo {
+    margin-left: 6.5%;
+}
+.savingsTitle .descinfo {
+    margin-left: 12.5%;
+}
+.savingsTitle .categoryinfo {
+    margin-left: 24.5%;
+}
+.savingsTitle .amountinfo {
+    margin-left: 16.5%;
+}
+.savingsTitle .balanceinfo {
+    margin-left: 7.5%;
+}
+
+.checkingTitle .dateinfo {
+    margin-left: 6.5%;
+}
+.checkingTitle .descinfo {
+    margin-left: 12.5%;
+}
+.checkingTitle .categoryinfo {
+    margin-left: 24.5%;
+}
+.checkingTitle .amountinfo {
+   margin-left: 16.5%;
+}
+.checkingTitle .balanceinfo {
+    margin-left: 7.5%;
+}
+
 .arrowwiden:hover {
     cursor: pointer;
 }
