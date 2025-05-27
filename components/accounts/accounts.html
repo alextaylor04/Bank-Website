@@ -1,22 +1,26 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <title></title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="accounts.css">
         <script src="https://kit.fontawesome.com/040299a7da.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="accounts.css">
     </head>
 
-   
-
     <body>
-        <div class="nav-bar">
-            <a class="home" href="../home/home.html">Home</a>
-            <a>Test</a>
-            <a>Test1</a>
-            <a>Test2</a>
-            <a>Test3</a>
+        <div class="menu-container nav-menu">
+            <div class="logo-container">
+                <img src="../Images/logo.png" alt="Bank Logo">
+            </div>
+            <nav class="nav-links">
+                <a href="" class="home">Home</a>
+                <a href="" class="nav-menu">Profile</a>
+                <a href="" class="nav-menu">Alerts</a>
+                <a href="../home/home.html" class="nav-menu">Sign Out</a>
+            </nav>
         </div>
+
         <div class="accountholder" id="accountholder">
             
         </div>
@@ -32,7 +36,7 @@
                     <p class="payment">Select Payment Amount</p>
                     <p class="custom-text">Custom amount</p>
                     <div class="customamountholder">
-                        <p>$</p>
+                        <p class="currencySymbol">$</p>
                         <input type="number" class="custom-amount" placeholder="0.00" min="0" step="0.01" onclick="customAmount()">
                     </div>
                     <button class="moneybox" onclick="moneybox(0)">

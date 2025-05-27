@@ -1,12 +1,5 @@
 /*
 TODO:
-- add functions to add different part of titles(date, balance, amount, etc.)
-- add savings + checking title stuff to css
-
-
-
-
-- fix transactions to work with savings, credit card, and checking.
 - add ability to search for a certain transaction
 */
 
@@ -298,7 +291,17 @@ Transaction.prototype.createAmountHolder = function () {
 
     const p6 = document.createElement("p");
 
-    const node6 = document.createTextNode(formatToUSD(this.amount));
+    var symbol = "-";
+
+
+
+    if (this.amount > 0) {
+        symbol = "+";
+
+        p6.style.color = "green";
+    }
+
+    const node6 = document.createTextNode(symbol + formatToUSD(Math.abs(this.amount)));
 
     p6.appendChild(node6);
 
@@ -318,7 +321,7 @@ Transaction.prototype.createBalanceHolder = function () {
 
     const p6 = document.createElement("p");
 
-    const node6 = document.createTextNode(formatToUSD(this.balance)); // addCommasToNumber(Math.floor(numBalance))
+    const node6 = document.createTextNode(formatToUSD(this.balance));
 
     p6.appendChild(node6);
 
@@ -611,10 +614,10 @@ function getCents (number) {
 /*
 Testing function 
 */
-var tempAdderToTransactions = function (accountType) { 
+var tempAdderToTransactions = function () { 
     if (accountType == "Credit Card") {
         addCreditCardTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, 12.45);
-        addCreditCardTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 12345, 9.34);
+        addCreditCardTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 12345, -9.34);
         addCreditCardTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, 23.08);
     } else if (accountType == "Savings") {
         addSavingsTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 1047.04, 10.00)
@@ -627,29 +630,13 @@ var tempAdderToTransactions = function (accountType) {
     }
 }
 
-
 /*
-loadInAccountInfo function
-- Loads in the account info sent to the transaction page
+getAccountBackground function
+- Gets the background image or color for the account
 */
-var loadInAccountInfo = function () {
-    var accountBackgroundColors = ["rgb(38,66,97)", "rgb(22, 96, 133)", "rgb(37, 41, 43)", "linear-gradient( rgba(0,0,0,.5), rgba(0,0,0,.6) ),url(../Images/stars_1.jpeg)", "linear-gradient(rgba(58, 136, 70, 0.9), rgba(58, 136, 70, 0.7)),url(../Images/grass.jpg)"]; 
-    var temp = JSON.parse(localStorage.getItem("account"));
-    if (temp != undefined) {
-        accountType = temp["type"]
-        tempAdderToTransactions(accountType)
-        var headerName = document.getElementById("headerName");
-        headerName.innerHTML = accountType;
-        var balance = document.getElementById("balance");
-        if (accountType == "Savings" || accountType == "Checking") {
-            var numBalance = temp["balance"]
-            balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
-        } else if (accountType == "Credit Card") {
-            var numBalance = temp["current-balance"]
-            balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
-        }
-    }
+var getAccountBackground = function () {
     var heading = document.getElementById("heading")
+    var accountBackgroundColors = ["rgb(38,66,97)", "rgb(22, 96, 133)", "rgb(37, 41, 43)", "linear-gradient( rgba(0,0,0,.5), rgba(0,0,0,.6) ),url(../Images/stars_1.jpeg)", "linear-gradient(rgba(58, 136, 70, 0.9), rgba(58, 136, 70, 0.7)),url(../Images/grass.jpg)"]; 
     var backNum = localStorage.getItem("backColor")
     if (backNum != undefined) {
         var backColor = accountBackgroundColors[backNum];
@@ -664,6 +651,37 @@ var loadInAccountInfo = function () {
         heading.style.backgroundColor = backColor;
         
         }
+    }
+}
+
+/*
+Testing function to get account balance
+*/
+var getAccountBalance = function (temp) {
+    var balance = document.getElementById("balance");
+    var numBalance;
+    if (accountType == "Savings" || accountType == "Checking") {
+        numBalance = temp["balance"]
+    } else if (accountType == "Credit Card") {
+        numBalance = temp["current-balance"]
+    }
+    balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
+}
+
+/*
+loadInAccountInfo function
+- Loads in the account info sent to the transaction page
+*/
+var loadInAccountInfo = function () {
+    getAccountBackground();
+    var temp = JSON.parse(localStorage.getItem("account"));
+    if (temp != undefined) {
+        accountType = temp["type"]
+        // accountID = temp["ID"]
+        tempAdderToTransactions(accountType)
+        var headerName = document.getElementById("headerName");
+        headerName.innerHTML = accountType;
+        getAccountBalance(temp);
     }
 }
 

@@ -8,6 +8,7 @@ var accountnum = -1;
 var accountcounter = 0;
 var filechecker = 0;
 
+
 function addCommasToNumber(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -256,9 +257,11 @@ var updateCustomAmount = function () {
   if (element.value.length > 0) {
     var customValue = Number(element.value);
     if (customValue > 0) {
-      payOptions["payBalance"] = Math.floor(customValue * 100) / 100; 
-      updateContinue("add");
-      payOptions["status"] = "custom";
+      if ((Math.floor(customValue * 100) / 100) <= accountList[accountnum]["current-balance"]) {
+        payOptions["payBalance"] = Math.floor(customValue * 100) / 100; 
+        updateContinue("add");
+        payOptions["status"] = "custom";
+      }
       resetBox(0);
       resetBox(1);
       element.blur();
@@ -345,7 +348,9 @@ var payCredit = function () {
       accountList[accountnum]["current-balance"] -= payOptions["payBalance"];
       updateAccount(accountnum);
     } else {
-      // send error message
+      if (payOptions["status"] != "") {
+      alert("Can't pay amount.")
+      }
     }
 }
 
