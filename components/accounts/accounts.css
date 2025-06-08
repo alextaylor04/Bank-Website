@@ -210,7 +210,7 @@ body {
 .selected {
     border: 1px solid grey;
 }
-.continue {
+.payButton {
     font-size: 20px;
     width: 92%;
     height: 50px;
@@ -223,10 +223,10 @@ body {
     justify-content: center;
     align-items: center;
 }
-.green_continue {
+.green_payButton {
     background-color: rgb(27, 143, 27);
 }
-.green_continue:hover {
+.green_payButton:hover {
     cursor: pointer;
     background-color: rgb(33, 162, 33);
 }

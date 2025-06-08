@@ -1,12 +1,21 @@
 
+/*
+TODO:
+- add accountID feature
+- Could make createBlankAccount work again
+*/
+
 var currency = "$";
 var shortNamesForAccounts = {"Credit Card": "credit", "Savings": "savings", "Rewards": "rewards", "Checking": "checking"}
 var typesInfo = {"savings": {"under_info": "AVAILABLE BALANCE", "button_info": "View Account"}, "rewards": {"under_info": "REWARDS CASH", "button_info": "View Rewards"}, "credit": {"under_info": "CURRENT BALANCE", "button_info": "Pay bill"}, "checking": {"under_info": "AVAILABLE BALANCE", "button_info": "View Account"}};
 var accountBackgroundColors = ["rgb(38,66,97)", "rgb(22, 96, 133)", "rgb(37, 41, 43)", "linear-gradient( rgba(0,0,0,.5), rgba(0,0,0,.6) ),url(../Images/stars_1.jpeg)", "linear-gradient(rgba(58, 136, 70, 0.9), rgba(58, 136, 70, 0.7)),url(../Images/grass.jpg)"]; 
 
+var accountList = [];
 var accountnum = -1;
 var accountcounter = 0;
 var filechecker = 0;
+var payOptions = {"status": "", "payBalance": -1};
+var mode = "none";
 
 
 function addCommasToNumber(number) {
@@ -27,7 +36,6 @@ var createAccountonScreen = function (name, balance, type, backgroundOption) {
     var tempnum = accountcounter;
 
     div3.setAttribute("class", "account1");
-    console.log(type);
     if (type != "rewards") {
       div3.onclick = function () {setTimeout(function () {openAccountFile(tempnum);}, 50);}
     } else {
@@ -114,33 +122,25 @@ var createAccountonScreen = function (name, balance, type, backgroundOption) {
 
     element.appendChild(div3);
 }
-var createBlankAccount = function () {
-
-    var div1 = document.createElement("div");
-
-    div1.setAttribute("class", "account1");
-
-    div1.style.visibility = "hidden";
-
-    var element = document.getElementById("accountholder");
-
-    element.appendChild(div1);
-}
 
 
 
-
+/*
+openAccountFile function
+- runs when an account is clicked on by the user.
+*/
 var openAccountFile = function (num) {
   if (filechecker === 0) {
     localStorage.setItem("account", JSON.stringify(accountList[num]));
     localStorage.setItem("backColor", accountList[num]["backColor"])
+    localStorage.setItem("accountID", 5)
     window.location = "../Transactions/transactions.html";
   }
   filechecker = 0;
 }
 
 
-var createAccount = function (type) {
+var createAccountDisplay = function (type) {
   var balance;
   if (type != "Credit Card") {
     balance = accountList[accountcounter]["balance"];
@@ -166,27 +166,16 @@ var createAccount = function (type) {
   createAccountonScreen(type, balance, shortNamesForAccounts[type], backgroundNum);
   accountcounter++;
 }
-var updateAccount = function (num) {
-  var balance;
-  if (accountList[num]["type"] != "Credit Card") {
-    balance = accountList[num]["balance"];
-  } else {
-    balance = accountList[num]["current-balance"];
-  }
+
+/*
+updateCreditCardAccount function
+- updates the display for a credit card account
+*/
+var updateCreditCardAccount = function (num) {
+  var balance = accountList[num]["current-balance"];
   var curraccount = document.getElementById("account" + num);
   curraccount.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(balance)) + '<span class="cents">' + getCents(balance) + '</span>';
 }
-
-var accountList = [];
-accountList.push({"type": "Savings", "balance": 1000.00})
-accountList.push({"type": "Checking", "balance": 200.00})
-
-for (var i = 0; i < accountList.length; i++) {
-  createAccount(accountList[i]["type"]);
-}
-// createBlankAccount();
-
-
 
 
 
@@ -199,21 +188,7 @@ var AccountListContainsRewards = function () {
   return false;
 }
 
-var makeBlankAccount = function (type) {
-  if (type != "Credit Card") {
-    accountList.push({"type": type, "balance": 100.00})
-  } else {
-    accountList.push({"type": type, "current-balance": 100.00, "statement-balance": 50.00})
-  }
-  createAccount(type);
-}
-var addBlankAccount = function (type) {
-  closeModal(2);
-  makeBlankAccount(type);
-  if (AccountListContainsRewards() === false && type === "Credit Card") {
-    makeBlankAccount("Rewards");
-  }
-}
+
 
 var modal = document.getElementById("myModal");
 var modal2 = document.getElementById("myModal2");
@@ -242,13 +217,13 @@ window.onclick = function(event) {
       updateCustomAmount();
     }
     if (element.value.length === 0 && payOptions["status"] === "custom") {
-      updateContinue("remove");
+      updatePayButton("remove");
       payOptions["status"] = "";
       payOptions["payBalance"] = 0;
     }
   }
 }
-var mode = "none";
+
 var updateCustomAmount = function () {
   var element = document.getElementsByClassName("custom-amount")[0]
   if (element.value.length > 0 && element.value.includes(".") === false) {
@@ -259,7 +234,7 @@ var updateCustomAmount = function () {
     if (customValue > 0) {
       if ((Math.floor(customValue * 100) / 100) <= accountList[accountnum]["current-balance"]) {
         payOptions["payBalance"] = Math.floor(customValue * 100) / 100; 
-        updateContinue("add");
+        updatePayButton("add");
         payOptions["status"] = "custom";
       }
       resetBox(0);
@@ -274,13 +249,21 @@ document.addEventListener('keyup', event => {
   }
 })
 
+/*
+openModal function
+- function that controls all modals for the accounts file.
+
+Inputs:
+- 1 = Pay Modal
+- 2 = create new account modal
+*/
 var openModal = function (openvar) {
   if (openvar === 1) {
     modal.style.display = "block";
     mode = "modal";
     resetBox(0);
     resetBox(1);
-    updateContinue("remove");
+    updatePayButton("remove");
     var statement = document.getElementById("statement");
     var current = document.getElementById("current");
     var custom_amount = document.getElementsByClassName("custom-amount")[0];
@@ -291,6 +274,15 @@ var openModal = function (openvar) {
     modal2.style.display = "block";
   }
 }
+
+/*
+closeModal function
+- function that closes any modal within the accounts file.
+
+Inputs:
+- 1 = Pay Modal
+- 2 = create new account modal
+*/
 var closeModal = function (closevar) {
   if (closevar === 1) {
     modal.style.display = "none";
@@ -307,24 +299,29 @@ var customAmount = function () {
 
 
 
-var payOptions = {"status": "", "payBalance": -1};
 var resetBox = function (num) {
   var otherbox = document.getElementsByClassName("moneybox")[num];
   otherbox.classList.remove("selected");
 }
-var updateContinue = function (conString) {
-  var continueBox = document.getElementsByClassName("continue")[0];
+
+/*
+updatePayButton
+- updates Pay Button in Pay Modal
+*/
+var updatePayButton = function (conString) {
+  var payButton = document.getElementsByClassName("payButton")[0];
   if (conString === "add") {
-    continueBox.classList.add("green_continue");
+    payButton.classList.add("green_payButton");
   } else {
-    continueBox.classList.remove("green_continue");
+    payButton.classList.remove("green_payButton");
   }
 }
+
 var moneybox = function (num) {
   if (payOptions["status"] != "custom") {
     var box = document.getElementsByClassName("moneybox")[num];
     box.classList.add("selected");
-    updateContinue("add");
+    updatePayButton("add");
     if (num === 0) {
       payOptions["payBalance"] = accountList[accountnum]["statement-balance"];
       resetBox(1)
@@ -337,6 +334,11 @@ var moneybox = function (num) {
   }
   console.log(payOptions);
 }
+
+/*
+payCredit function
+- controls the logic when you press the "Pay" button inside the Pay Modal
+*/
 var payCredit = function () {
   if (payOptions["payBalance"] > 0 && payOptions["payBalance"] <= accountList[accountnum]["current-balance"]) {
     closeModal(1);
@@ -346,7 +348,7 @@ var payCredit = function () {
         accountList[accountnum]["statement-balance"] -= payOptions["payBalance"];
       }
       accountList[accountnum]["current-balance"] -= payOptions["payBalance"];
-      updateAccount(accountnum);
+      updateCreditCardAccount(accountnum);
     } else {
       if (payOptions["status"] != "") {
       alert("Can't pay amount.")
@@ -354,6 +356,39 @@ var payCredit = function () {
     }
 }
 
+/*
+Testing function for adding accounts with no data
+*/
+var makeBlankAccount = function (type) {
+  if (type != "Credit Card") {
+    accountList.push({"type": type, "balance": 100.00})
+  } else {
+    accountList.push({"type": type, "current-balance": 100.00, "statement-balance": 50.00})
+  }
+  createAccountDisplay(type);
+}
+
+var makeRealAccount = function (type) {
+  // add to accountList
+  createAccountDisplay(type);
+}
+
+var addAccount = function (type) {
+  closeModal(2);
+  makeBlankAccount(type); // Back-End --> swap this out out for makeRealAccount(type)
+  if (AccountListContainsRewards() === false && type === "Credit Card") {
+    makeBlankAccount("Rewards");
+  }
+}
+
+var loadInAccounts = function () {
+  accountList.push({"type": "Savings", "balance": 1000.00})
+  accountList.push({"type": "Checking", "balance": 200.00})
+  for (var i = 0; i < accountList.length; i++) {
+    createAccountDisplay(accountList[i]["type"]);
+  }
+}
+loadInAccounts()
 
 /*
 <div class="account1">

@@ -1,5 +1,7 @@
 /*
 TODO:
+- Swap colors for credit card transactions(paying off balance should be green and purchases should be normal)
+
 - add ability to search for a certain transaction
 */
 
@@ -617,16 +619,16 @@ Testing function
 var tempAdderToTransactions = function () { 
     if (accountType == "Credit Card") {
         addCreditCardTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, 12.45);
-        addCreditCardTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 12345, -9.34);
+        addCreditCardTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 12345, 9.34);
         addCreditCardTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, 23.08);
     } else if (accountType == "Savings") {
-        addSavingsTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 1047.04, 10.00)
-        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 1035.04, 12.00)
-        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 1050.04, 15)
+        addSavingsTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 1030.04, -15) 
+        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 1035.04, -12.00)
+        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 1047.04, 10.00) 
     } else if (accountType == "Checking") {
-        addCheckingTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 500.07, 12.00)
-        addCheckingTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 488.07, 12.00)
-        addCheckingTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 538.07, 50.00)
+        addCheckingTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 456.07, -20.00)
+        addCheckingTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 476.07, -12.00) 
+        addCheckingTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 488.07, 50.00) 
     }
 }
 
@@ -668,22 +670,6 @@ var getAccountBalance = function (temp) {
     balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
 }
 
-/*
-loadInAccountInfo function
-- Loads in the account info sent to the transaction page
-*/
-var loadInAccountInfo = function () {
-    getAccountBackground();
-    var temp = JSON.parse(localStorage.getItem("account"));
-    if (temp != undefined) {
-        accountType = temp["type"]
-        // accountID = temp["ID"]
-        tempAdderToTransactions(accountType)
-        var headerName = document.getElementById("headerName");
-        headerName.innerHTML = accountType;
-        getAccountBalance(temp);
-    }
-}
 
 var addCreditCardTransaction = function (day, month, year, hour, second, logourl, desc, category, card, amount) {
     transactions.push(new CreditCardTransaction([day, month, year, hour, second], logourl, desc, category, card, amount));
@@ -726,10 +712,12 @@ var openTransaction = function (num) {
     
 }
 
-
+/*
+setUp function
+- sets up visuals for page
+*/
 var setUp = function () {
     getTransBorder();
-    loadInAccountInfo();
     var currentYear = transactions[0].getYear();
     printYearGap(currentYear);
     createTitles();
@@ -757,7 +745,24 @@ var setUp = function () {
     }
 }
 
-setUp();
+/*
+loadInAccountInfo function
+- Loads in the account info sent to the transaction page
+*/
+var loadInAccountInfo = function () {
+    getAccountBackground();
+    var temp = JSON.parse(localStorage.getItem("account"));
+    if (temp != undefined) {
+        accountType = temp["type"]
+        accountID = temp["accountID"]
+        tempAdderToTransactions(accountType)
+        var headerName = document.getElementById("headerName");
+        headerName.innerHTML = accountType;
+        getAccountBalance(temp);
+    }
+    setUp();
+}
+loadInAccountInfo();
 
 
 
