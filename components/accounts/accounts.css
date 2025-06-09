@@ -323,6 +323,9 @@ input::-webkit-inner-spin-button {
 .fa-credit-card {
     font-size: 34px;
 }
+.hidden {
+    visibility: hidden;
+}
 
 @media(max-width: 1000px) {
     .accountholder {

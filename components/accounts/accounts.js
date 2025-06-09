@@ -2,7 +2,12 @@
 /*
 TODO:
 - add accountID feature
-- Could make createBlankAccount work again
+
+
+Backend:
+- load in accounts from the backend using loadInAccounts function
+  - utilize the the loadIn___Account functions to load them into the frontend
+- create accounts in the back-end using the createAccount functions
 */
 
 var currency = "$";
@@ -30,12 +35,16 @@ function getCents (number) {
 }
 
 
-var createAccountonScreen = function (name, balance, type, backgroundOption) {
+var createAccountonScreen = function (name, balance, type, backgroundOption, hiddenState) {
     const div3 = document.createElement("div");
 
     var tempnum = accountcounter;
 
-    div3.setAttribute("class", "account1");
+    if (hiddenState === "hide") {
+      div3.setAttribute("class", "account1 hidden");
+    } else {
+      div3.setAttribute("class", "account1");
+    }
     if (type != "rewards") {
       div3.onclick = function () {setTimeout(function () {openAccountFile(tempnum);}, 50);}
     } else {
@@ -140,7 +149,8 @@ var openAccountFile = function (num) {
 }
 
 
-var createAccountDisplay = function (type) {
+var createAccountDisplay = function () {
+  var type = accountList[accountcounter]["type"]
   var balance;
   if (type != "Credit Card") {
     balance = accountList[accountcounter]["balance"];
@@ -163,7 +173,7 @@ var createAccountDisplay = function (type) {
       break;
   }
   accountList[accountcounter]["backColor"] = backgroundNum;
-  createAccountonScreen(type, balance, shortNamesForAccounts[type], backgroundNum);
+  createAccountonScreen(type, balance, shortNamesForAccounts[type], backgroundNum, "show");
   accountcounter++;
 }
 
@@ -298,7 +308,6 @@ var customAmount = function () {
 }
 
 
-
 var resetBox = function (num) {
   var otherbox = document.getElementsByClassName("moneybox")[num];
   otherbox.classList.remove("selected");
@@ -332,7 +341,6 @@ var moneybox = function (num) {
       payOptions["status"] = "current";
     }
   }
-  console.log(payOptions);
 }
 
 /*
@@ -357,38 +365,150 @@ var payCredit = function () {
 }
 
 /*
-Testing function for adding accounts with no data
+createHiddenAccount function
+- creates an account box that takes up space but can't be interacted with.
 */
-var makeBlankAccount = function (type) {
-  if (type != "Credit Card") {
-    accountList.push({"type": type, "balance": 100.00})
-  } else {
-    accountList.push({"type": type, "current-balance": 100.00, "statement-balance": 50.00})
+var createHiddenAccount = function () {
+  createAccountonScreen("Savings", 0, shortNamesForAccounts["Savings"], 0, "hide");
+}
+
+var deleteHiddenAccount = function () {
+  var hiddenAccount = document.getElementsByClassName("hidden")[0]
+  if (hiddenAccount != undefined) {
+    hiddenAccount.remove()
   }
-  createAccountDisplay(type);
 }
 
-var makeRealAccount = function (type) {
-  // add to accountList
-  createAccountDisplay(type);
+
+
+/*
+loadInCreditCardAccount function
+- Adds a credit card account with a certain current_balance and statement_balance to the front-end accountList
+and displays it.
+*/
+var loadInCreditCardAccount = function (current_balance, statement_balance) {
+  accountList.push({"type": "Credit Card", "current-balance": current_balance, "statement-balance": statement_balance})
+  createAccountDisplay();
 }
 
+/*
+loadInSavingsAccount function
+- Adds a savings account with a certain balance to the front-end accountList
+and displays it.
+*/
+var loadInSavingsAccount = function (balance) {
+  accountList.push({"type": "Savings", "balance": balance})
+  createAccountDisplay();
+}
+
+/*
+loadInCheckingAccount function
+- Adds a checking account with a certain balance to the front-end accountList
+and displays it.
+*/
+var loadInCheckingAccount = function (balance) {
+  accountList.push({"type": "Checking", "balance": balance})
+  createAccountDisplay();
+}
+
+/*
+loadInCheckingAccount function
+- Adds a rewards account to the front-end accountList
+and displays it.
+*/
+var loadInRewardsAccount = function () {
+  accountList.push({"type": "Rewards", "balance": 100.00})
+  createAccountDisplay();
+}
+
+
+
+/*
+createCreditCardAccount function
+- creates a credit card account and then has it loaded in the frontend
+*/
+var createCreditCardAccount = function (current_balance, statement_balance) {
+  // add to backend
+  loadInCreditCardAccount(current_balance, statement_balance)
+}
+
+/*
+createSavingsAccount function
+- creates a savings account and then has it loaded in the frontend
+*/
+var createSavingsAccount = function (balance) {
+  // add to backend
+  loadInSavingsAccount(balance)
+}
+
+/*
+createCheckingAccount function
+- creates a checking account and then has it loaded in the frontend
+*/
+var createCheckingAccount = function (balance) {
+  // add to backend
+  loadInCheckingAccount(balance)
+}
+
+/*
+createRewardsAccount function
+- creates a rewards account and then has it loaded in the frontend
+*/
+var createRewardsAccount = function () {
+  // add to backend
+  loadInRewardsAccount()
+}
+
+
+
+/*
+addAccount function
+- function that is run when the user wants to add a new account. Makes a rewards account if the user is adding a 
+credit card account and does not already have a rewards account.
+*/
 var addAccount = function (type) {
+  deleteHiddenAccount()
   closeModal(2);
-  makeBlankAccount(type); // Back-End --> swap this out out for makeRealAccount(type)
+  if (type == "Savings") {
+    createSavingsAccount(200.00)
+  } else if (type == "Checking") {
+    createCheckingAccount(150.00)
+  } else if (type == "Credit Card") {
+    createCreditCardAccount(100.00, 50.00)
+  }
   if (AccountListContainsRewards() === false && type === "Credit Card") {
-    makeBlankAccount("Rewards");
+    createRewardsAccount()
+  }
+  if (accountList.length % 2 != 0) {
+    createHiddenAccount()
   }
 }
 
+/*
+makeTestingAccounts function
+- testing function for displaying accounts
+*/
+var makeTestingAccounts = function () {
+  createSavingsAccount(100.00)
+  createCheckingAccount(200.00)
+}
+
+/*
+loadInAccounts
+- function that is called when the program starts up or refreshes. Loads in all 
+*/
 var loadInAccounts = function () {
-  accountList.push({"type": "Savings", "balance": 1000.00})
-  accountList.push({"type": "Checking", "balance": 200.00})
-  for (var i = 0; i < accountList.length; i++) {
-    createAccountDisplay(accountList[i]["type"]);
+  // get accounts from back-end 
+  // - use loadInAccount functions
+  makeTestingAccounts() // just for testing front-end
+  if (accountList.length % 2 != 0) {
+    createHiddenAccount()
   }
 }
 loadInAccounts()
+
+
+
 
 /*
 <div class="account1">
