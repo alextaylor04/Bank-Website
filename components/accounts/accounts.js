@@ -1,13 +1,11 @@
 
 /*
-TODO:
-- add accountID feature
-
 
 Backend:
 - load in accounts from the backend using loadInAccounts function
-  - utilize the the loadIn___Account functions to load them into the frontend
+  - utilize the the loadInCreditCardAccount, loadInSavingsAccounts, etc. functions to load them into the frontend
 - create accounts in the back-end using the createAccount functions
+- updateCreditCardAccountBalanceInDatabase()
 */
 
 var currency = "$";
@@ -142,7 +140,11 @@ var openAccountFile = function (num) {
   if (filechecker === 0) {
     localStorage.setItem("account", JSON.stringify(accountList[num]));
     localStorage.setItem("backColor", accountList[num]["backColor"])
-    localStorage.setItem("accountID", 5)
+    if (accountList[num]["type"] != "Rewards") {
+      localStorage.setItem("accountID", accountList[num]["accountID"])
+    } else {
+      localStorage.setItem("rewardsID", accountList[num]["rewardsID"])
+    }
     window.location = "../Transactions/transactions.html";
   }
   filechecker = 0;
@@ -178,10 +180,10 @@ var createAccountDisplay = function () {
 }
 
 /*
-updateCreditCardAccount function
+updateCreditCardAccountDisplay function
 - updates the display for a credit card account
 */
-var updateCreditCardAccount = function (num) {
+var updateCreditCardAccountDisplay = function (num) {
   var balance = accountList[num]["current-balance"];
   var curraccount = document.getElementById("account" + num);
   curraccount.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(balance)) + '<span class="cents">' + getCents(balance) + '</span>';
@@ -356,7 +358,8 @@ var payCredit = function () {
         accountList[accountnum]["statement-balance"] -= payOptions["payBalance"];
       }
       accountList[accountnum]["current-balance"] -= payOptions["payBalance"];
-      updateCreditCardAccount(accountnum);
+      updateCreditCardAccountDisplay(accountnum);
+      updateCreditCardAccountBalanceInDatabase()
     } else {
       if (payOptions["status"] != "") {
       alert("Can't pay amount.")
@@ -379,15 +382,24 @@ var deleteHiddenAccount = function () {
   }
 }
 
+/*
+updateCreditCardAccountBalanceInDatabase function
+- Updates credit card account balance in the database
+*/
+var updateCreditCardAccountBalanceInDatabase = function () {
+  // new statement balance --> accountList[accountnum]["statement-balance"]
+  // new current balance --> accountList[accountnum]["current-balance"]
 
+  // update backend
+}
 
 /*
 loadInCreditCardAccount function
 - Adds a credit card account with a certain current_balance and statement_balance to the front-end accountList
 and displays it.
 */
-var loadInCreditCardAccount = function (current_balance, statement_balance) {
-  accountList.push({"type": "Credit Card", "current-balance": current_balance, "statement-balance": statement_balance})
+var loadInCreditCardAccount = function (current_balance, statement_balance, accountID) {
+  accountList.push({"type": "Credit Card", "current-balance": current_balance, "statement-balance": statement_balance, "accountID": accountID})
   createAccountDisplay();
 }
 
@@ -396,8 +408,8 @@ loadInSavingsAccount function
 - Adds a savings account with a certain balance to the front-end accountList
 and displays it.
 */
-var loadInSavingsAccount = function (balance) {
-  accountList.push({"type": "Savings", "balance": balance})
+var loadInSavingsAccount = function (balance, accountID) {
+  accountList.push({"type": "Savings", "balance": balance, "accountID": accountID})
   createAccountDisplay();
 }
 
@@ -406,8 +418,8 @@ loadInCheckingAccount function
 - Adds a checking account with a certain balance to the front-end accountList
 and displays it.
 */
-var loadInCheckingAccount = function (balance) {
-  accountList.push({"type": "Checking", "balance": balance})
+var loadInCheckingAccount = function (balance, accountID) {
+  accountList.push({"type": "Checking", "balance": balance, "accountID": accountID})
   createAccountDisplay();
 }
 
@@ -416,8 +428,8 @@ loadInCheckingAccount function
 - Adds a rewards account to the front-end accountList
 and displays it.
 */
-var loadInRewardsAccount = function () {
-  accountList.push({"type": "Rewards", "balance": 100.00})
+var loadInRewardsAccount = function (rewardsID) {
+  accountList.push({"type": "Rewards", "balance": 100.00, "rewardsID": rewardsID})
   createAccountDisplay();
 }
 
@@ -429,7 +441,8 @@ createCreditCardAccount function
 */
 var createCreditCardAccount = function (current_balance, statement_balance) {
   // add to backend
-  loadInCreditCardAccount(current_balance, statement_balance)
+  accountID = 5 // temporary accountID
+  loadInCreditCardAccount(current_balance, statement_balance, accountID)
 }
 
 /*
@@ -438,7 +451,8 @@ createSavingsAccount function
 */
 var createSavingsAccount = function (balance) {
   // add to backend
-  loadInSavingsAccount(balance)
+  accountID = 5 // temporary accountID
+  loadInSavingsAccount(balance, accountID)
 }
 
 /*
@@ -447,7 +461,8 @@ createCheckingAccount function
 */
 var createCheckingAccount = function (balance) {
   // add to backend
-  loadInCheckingAccount(balance)
+  accountID = 5 // temporary accountID
+  loadInCheckingAccount(balance, accountID)
 }
 
 /*
@@ -456,7 +471,8 @@ createRewardsAccount function
 */
 var createRewardsAccount = function () {
   // add to backend
-  loadInRewardsAccount()
+  rewardsID = 5 // temporary rewardsID
+  loadInRewardsAccount(rewardsID)
 }
 
 
@@ -505,12 +521,18 @@ var loadInAccounts = function () {
     createHiddenAccount()
   }
 }
+
+
+
 loadInAccounts()
 
 
 
 
 /*
+
+HTML Code for an Account Display
+
 <div class="account1">
     <div class="accountinfo">
         <p class="heading">Savings</p>

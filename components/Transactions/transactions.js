@@ -1,9 +1,21 @@
+
 /*
-TODO:
-- Swap colors for credit card transactions(paying off balance should be green and purchases should be normal)
+
+Backend:
+- loadInTransactions()
+
+*/
+
+
+
+/*
+Future Improvements:
 
 - add ability to search for a certain transaction
 */
+
+
+
 
 
 var currency = "$";
@@ -11,12 +23,37 @@ var transactioncounter = 0;
 var transactionBorderRadius;
 var accountType;
 var transactions = [];
-function getTransBorder() {
-    var r = document.querySelector(':root');
-    var rs = getComputedStyle(r);
-    transactionBorderRadius = rs.getPropertyValue('--blue');
-}
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
+const monthsShort = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+];
 
+
+// ---------- Transaction Classes ----------
 
 class Transaction {
     constructor(date, logoURL, description, category, type) {
@@ -101,87 +138,6 @@ Transaction.prototype.getHour = function () {
 Transaction.prototype.getSecond = function () {
     return this.customdate.getSecond();
 }
-
-/*
-Savings
-Date (Image) Description Category Amount Balance
-
-Credit Card
-Date (Image) Description Category Card Amount
-
-Checking
-Date (Image) Description Category Amount Balance
-
-
-
-Checking
-- Date transaction happened
-- Image
-- Description of where money goes to/comes from
-    - Company
-    - Location (if useful)
-    - Last 4 digits of Account # (if coming from a bank)
-- Category:
-    - Check, Deposit, Debit Card, Transfer
-- Amount of transaction
-- new Balance
-- Check info (if check was used for transaction)
-
-
-Savings
-- Date transaction happened
-- Image
-- Description of where money goes to/comes from
-    - Company
-    - Interest (if it's the interest from that account)
-    - Last 4 digits of Account # (if coming from a bank)
-- Category:
-    - Interest, Withdraw, Deposit, Transfer
-- Amount of transaction
-- new Balance
-
-
-Credit Card
-- Date transaction happened
-- Image
-- Description of where money goes to/comes from
-    - Company
-    - Location (if useful)
-    - Last 4 digits of Account # (if coming from a bank)
-- Category:
-    - Examples: Gas, Restaurant, Payment, etc.
-- Card number
-- Amount of transaction
-
-*/
-const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-];
-const monthsShort = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
-];
 
 Transaction.prototype.createDateHolder = function () {
     const div3 = document.createElement("div");
@@ -293,14 +249,21 @@ Transaction.prototype.createAmountHolder = function () {
 
     const p6 = document.createElement("p");
 
-    var symbol = "-";
+    var symbol = "";
 
+    if (this.type != "Credit") {
+        if (this.amount > 0) {
+            symbol = "+";
 
-
-    if (this.amount > 0) {
-        symbol = "+";
-
-        p6.style.color = "green";
+            p6.style.color = "green";
+        } else {
+            symbol = "-"
+        }
+    } else {
+        if (this.amount < 0) {
+            symbol = "-"
+            p6.style.color = "green";
+        }
     }
 
     const node6 = document.createTextNode(symbol + formatToUSD(Math.abs(this.amount)));
@@ -430,6 +393,8 @@ Transaction.prototype.printOnScreen = function () {
     transactioncounter++;
 }
 
+// ---------- End of Transaction Classes ----------
+
 
 var printYearGap = function (year) {
     const h1 = document.createElement("h1");
@@ -476,6 +441,8 @@ function formatToUSD(amount) {
         currency: 'USD'
     });
 }
+
+// ----------- Creating Title Functions ----------- 
 
 var createAmountTitle = function () {
     const p5 = document.createElement("p");
@@ -598,7 +565,7 @@ var createTitles = function () {
     element.appendChild(div1);
 }
 
-
+// ----------- End of Creating Title Functions ----------- 
 
 
 function addCommasToNumber(number) {
@@ -612,24 +579,24 @@ function getCents (number) {
   return cents;
 }
 
+function getTransBorder() {
+    var r = document.querySelector(':root');
+    var rs = getComputedStyle(r);
+    transactionBorderRadius = rs.getPropertyValue('--blue');
+}
 
 /*
-Testing function 
+Testing function to get account balance
 */
-var tempAdderToTransactions = function () { 
-    if (accountType == "Credit Card") {
-        addCreditCardTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, 12.45);
-        addCreditCardTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 12345, 9.34);
-        addCreditCardTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, 23.08);
-    } else if (accountType == "Savings") {
-        addSavingsTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 1030.04, -15) 
-        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 1035.04, -12.00)
-        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 1047.04, 10.00) 
-    } else if (accountType == "Checking") {
-        addCheckingTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 456.07, -20.00)
-        addCheckingTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 476.07, -12.00) 
-        addCheckingTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 488.07, 50.00) 
+var getAccountBalance = function (temp, accountType) {
+    var balance = document.getElementById("balance");
+    var numBalance;
+    if (accountType == "Savings" || accountType == "Checking") {
+        numBalance = temp["balance"]
+    } else if (accountType == "Credit Card") {
+        numBalance = temp["current-balance"]
     }
+    balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
 }
 
 /*
@@ -654,20 +621,6 @@ var getAccountBackground = function () {
         
         }
     }
-}
-
-/*
-Testing function to get account balance
-*/
-var getAccountBalance = function (temp) {
-    var balance = document.getElementById("balance");
-    var numBalance;
-    if (accountType == "Savings" || accountType == "Checking") {
-        numBalance = temp["balance"]
-    } else if (accountType == "Credit Card") {
-        numBalance = temp["current-balance"]
-    }
-    balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
 }
 
 
@@ -746,22 +699,55 @@ var setUp = function () {
 }
 
 /*
+Testing function 
+*/
+var tempAdderToTransactions = function () { 
+    if (accountType == "Credit Card") {
+        addCreditCardTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, 12.45);
+        addCreditCardTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 12345, 9.34);
+        addCreditCardTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, -23.08);
+    } else if (accountType == "Savings") {
+        addSavingsTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 1030.04, -15) 
+        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 1035.04, -12.00)
+        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 1047.04, 10.00) 
+    } else if (accountType == "Checking") {
+        addCheckingTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 456.07, -20.00)
+        addCheckingTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 476.07, -12.00) 
+        addCheckingTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 488.07, 50.00) 
+    }
+}
+
+var loadInTransactions = function (accountID) {
+    // use accountID to get transactions from backend
+    // use addSavingsTransations, addCheckingTransations, etc.
+}
+
+/*
 loadInAccountInfo function
 - Loads in the account info sent to the transaction page
 */
 var loadInAccountInfo = function () {
     getAccountBackground();
+    var headerName = document.getElementById("headerName");
     var temp = JSON.parse(localStorage.getItem("account"));
     if (temp != undefined) {
         accountType = temp["type"]
-        accountID = temp["accountID"]
-        tempAdderToTransactions(accountType)
-        var headerName = document.getElementById("headerName");
+        getAccountBalance(temp, accountType);
         headerName.innerHTML = accountType;
-        getAccountBalance(temp);
+        if (accountType != "Rewards") {
+            accountID = temp["accountID"]
+            loadInTransactions(accountID)
+        } else {
+            rewardsID = temp["rewardsID"]
+        }
+
+        tempAdderToTransactions(accountType) // testing function
     }
     setUp();
 }
+
+
+
 loadInAccountInfo();
 
 
@@ -777,3 +763,46 @@ loadInAccountInfo();
 
 
 
+/*
+
+
+Checking
+- Date transaction happened
+- Image
+- Description of where money goes to/comes from
+    - Company
+    - Location (if useful)
+    - Last 4 digits of Account # (if coming from a bank)
+- Category:
+    - Check, Deposit, Debit Card, Transfer
+- Amount of transaction
+- new Balance
+- Check info (if check was used for transaction)
+
+
+Savings
+- Date transaction happened
+- Image
+- Description of where money goes to/comes from
+    - Company
+    - Interest (if it's the interest from that account)
+    - Last 4 digits of Account # (if coming from a bank)
+- Category:
+    - Interest, Withdraw, Deposit, Transfer
+- Amount of transaction
+- new Balance
+
+
+Credit Card
+- Date transaction happened
+- Image
+- Description of where money goes to/comes from
+    - Company
+    - Location (if useful)
+    - Last 4 digits of Account # (if coming from a bank)
+- Category:
+    - Examples: Gas, Restaurant, Payment, etc.
+- Card number
+- Amount of transaction
+
+*/
