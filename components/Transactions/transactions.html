@@ -5,6 +5,19 @@
 </head>
 <body>
     <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+    <div class="menu-container nav-menu" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 5%; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <div class="logo-container">
+            <img src="../Images/logo.png" alt="Bank Logo" style="height: 40px;">
+        </div>
+        <nav class="nav-links" style="display: flex; gap: 20px;">
+            <a href="../home/home.html" style="text-decoration: none; color: #333;">Home</a>
+            <a href="../accounts/accounts.html" style="text-decoration: none; color: #333;">Accounts</a>
+            <a href="../profile/profile.html" style="text-decoration: none; color: #333;">Profile</a>
+            <a href="../alerts/alerts.html" style="text-decoration: none; color: #333;">Alerts</a>
+            <a href="../settings/settings.html" style="text-decoration: none; color: #333;">Settings</a>
+            <a href="#" style="text-decoration: none; color: #333;" onclick="signOut()">Sign Out</a>
+        </nav>
+    </div>
     <header class="header" id="heading">
         <div class="leftarrowholder">
             <a href="../accounts/accounts.html"><i class="fa-solid fa-arrow-left"></i></a>

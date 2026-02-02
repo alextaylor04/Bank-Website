@@ -1,0 +1,35 @@
+.profile-container {
+    width: 80%;
+    margin: 50px auto;
+    color: #333;
+}
+
+.profile-card {
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+}
+
+.profile-card h2 {
+    margin-top: 0;
+    color: rgb(32, 115, 171);
+}
+
+.info-group {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.info-label {
+    font-weight: bold;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    color: #222;
+}

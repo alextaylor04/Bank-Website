@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Mizzou Bank - Sign Up</title>
+        <meta name="description" content="Create a new account at Mizzou Bank.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../login/login.css">
+        <link rel="stylesheet" href="signup.css">
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    </head>
+    <body>
+        <div class="loginwrapper">
+            <form id="signupForm">
+                <h1>Sign Up</h1>
+                
+                <div class="input-box normalBox" id="firstNameHolder">
+                    <input type="text" placeholder="First Name" id="firstName" required>
+                </div>
+                
+                <div class="input-box normalBox" id="lastNameHolder">
+                    <input type="text" placeholder="Last Name" id="lastName" required>
+                </div>
+
+                <div class="input-box normalBox" id="emailHolder">
+                    <input type="email" placeholder="Email" id="email" required>
+                </div>
+
+                <div class="input-box normalBox" id="usernameholder">
+                    <i class='bx bxs-user'></i>
+                    <input type="text" placeholder="Username" id="username" required>
+                </div>
+                <p class="error" id="usernameError">Username already exists</p>
+
+                <div class="input-box normalBox" id="passwordholder">  
+                    <i class='bx bxs-lock-alt' ></i>                
+                    <input type="password" placeholder="Password" id="password" required>
+                </div>
+                
+                <button type="submit" class="login">Sign Up</button>
+                <div class="signin-link" style="text-align: center; margin-top: 20px;">
+                    <p>Already have an account? <a href="../login/login.html" style="color: #fff; font-weight: 600;">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+        <script src="signup.js"></script>
+    </body>
+</html>

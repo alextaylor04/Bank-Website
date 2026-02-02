@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Mizzou Bank - Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../accounts/accounts.css">
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+    <div class="menu-container nav-menu">
+        <div class="logo-container">
+            <img src="../Images/logo.png" alt="Bank Logo">
+        </div>
+        <nav class="nav-links">
+            <a href="../home/home.html" class="nav-menu">Home</a>
+            <a href="../accounts/accounts.html" class="nav-menu">Accounts</a>
+            <a href="../profile/profile.html" class="nav-menu">Profile</a>
+            <a href="../alerts/alerts.html" class="nav-menu">Alerts</a>
+            <a href="../settings/settings.html" class="home">Settings</a>
+            <a href="#" class="nav-menu" onclick="signOut()">Sign Out</a>
+        </nav>
+    </div>
+
+    <div class="settings-container">
+        <h1>Account Settings</h1>
+        
+        <div class="settings-section">
+            <h2>Alert Preferences</h2>
+            <div class="setting-item">
+                <div class="setting-text">
+                    <p class="setting-title">Transaction Alerts</p>
+                    <p class="setting-desc">Get notified when a new transaction occurs on your accounts.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="transactionAlerts" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-text">
+                    <p class="setting-title">Bill Payment Alerts</p>
+                    <p class="setting-desc">Get notified when a bill is paid or a payment is received.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="billAlerts" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2>Security</h2>
+            <div id="passwordForm" style="display: none; margin-top: 15px;">
+                <div class="info-group">
+                    <p class="info-label">Old Password</p>
+                    <input type="password" id="oldPassword" class="custom-amount" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                </div>
+                <div class="info-group">
+                    <p class="info-label">New Password</p>
+                    <input type="password" id="newPassword" class="custom-amount" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                </div>
+                <button class="save-btn" onclick="submitPasswordChange()" style="padding: 8px 20px; font-size: 0.9rem;">Confirm Change</button>
+                <button class="danger-btn" onclick="togglePasswordForm()" style="padding: 8px 20px; font-size: 0.9rem; margin-left: 10px;">Cancel</button>
+            </div>
+            <button id="togglePassBtn" class="danger-btn" onclick="togglePasswordForm()">Change Password</button>
+        </div>
+
+        <button class="save-btn" onclick="saveSettings()">Save Changes</button>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html>

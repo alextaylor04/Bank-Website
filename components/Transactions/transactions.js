@@ -1,4 +1,3 @@
-
 /*
 
 Backend:
@@ -56,9 +55,11 @@ const monthsShort = [
 // ---------- Transaction Classes ----------
 
 class Transaction {
-    constructor(date, logoURL, description, category, type) {
-        this.customdate = new CustomDate(date[0], date[1], date[2], date[3], date[4]);
-        this.logoURL = logoURL;
+    constructor(dateObj, logoURL, description, category, type) {
+        // Handle JS Date or backend date string
+        const d = new Date(dateObj);
+        this.customdate = new CustomDate(d.getDate(), d.getMonth(), d.getFullYear(), d.getHours(), d.getMinutes());
+        this.logoURL = logoURL || "../Images/default_logo.png";
         this.description = description;
         this.category = category;
         this.type = type;
@@ -77,10 +78,11 @@ class SavingsTransaction extends Transaction {
 }
 
 class CreditCardTransaction extends Transaction {
-    constructor(date, logoURL, description, category, card, amount) {
+    constructor(date, logoURL, description, category, card, amount, balance) {
         super(date, logoURL, description, category, "Credit")
         this.card = card;
         this.amount = amount;
+        this.balance = balance;
     }
 }
 
@@ -178,6 +180,11 @@ Transaction.prototype.createLogoHolder = function () {
     img1.src = this.logoURL;
 
     img1.setAttribute("class", "icon");
+    
+    // Add error handling for missing logos
+    img1.onerror = function() {
+        this.src = "https://i.imgur.com/oyD6it3.png"; // Placeholder
+    };
 
     div4.appendChild(img1);
 
@@ -229,7 +236,7 @@ Transaction.prototype.createCardHolder = function () {
 
     const p5 = document.createElement("p");
 
-    const node5 = document.createTextNode(this.card);
+    const node5 = document.createTextNode(this.card || "N/A");
 
     p5.appendChild(node5);
 
@@ -286,7 +293,7 @@ Transaction.prototype.createBalanceHolder = function () {
 
     const p6 = document.createElement("p");
 
-    const node6 = document.createTextNode(formatToUSD(this.balance));
+    const node6 = document.createTextNode(formatToUSD(this.balance || 0));
 
     p6.appendChild(node6);
 
@@ -310,11 +317,11 @@ Transaction.prototype.printOnScreen = function () {
     div9.id = "transaction" + transactioncounter;
 
     var transactionType;
-    if (this.type == "Savings") {
+    if (this.type === "Savings" || this.type === "SAVINGS") {
         transactionType = "savingsTransaction";
-    } else if (this.type == "Credit") {
+    } else if (this.type === "Credit" || this.type === "CREDIT") {
         transactionType = "creditTransaction";
-    } else if (this.type == "Checking") {
+    } else if (this.type === "Checking" || this.type === "CHECKINGS") {
         transactionType = "checkingTransaction";
     }
 
@@ -362,19 +369,13 @@ Transaction.prototype.printOnScreen = function () {
 
     div9.appendChild(this.createCategoryHolder());
 
-    if (this.type == "Credit") {
+    if (this.type === "Credit" || this.type === "CREDIT") {
 
         div9.appendChild(this.createCardHolder());
 
         div9.appendChild(this.createAmountHolder());
 
-    } else if (this.type == "Savings") {
-
-        div9.appendChild(this.createAmountHolder());
-
-        div9.appendChild(this.createBalanceHolder());
-
-    } else if (this.type == "Checkings") {
+    } else {
 
         div9.appendChild(this.createAmountHolder());
 
@@ -524,11 +525,11 @@ var createTitles = function () {
     const div1 = document.createElement("div");
 
     var transactionType;
-    if (accountType == "Savings") {
+    if (accountType === "Savings" || accountType === "SAVINGS") {
         transactionType = "savingsTitle";
-    } else if (accountType == "Credit Card") {
+    } else if (accountType === "Credit Card" || accountType === "CREDIT") {
         transactionType = "creditTitle";
-    } else if (accountType == "Checking") {
+    } else if (accountType === "Checking" || accountType === "CHECKINGS") {
         transactionType = "checkingTitle";
     }
 
@@ -540,19 +541,13 @@ var createTitles = function () {
 
     div1.appendChild(createCategoryTitle());
 
-    if (accountType == "Savings") {
-
-        div1.appendChild(createAmountTitle());
-
-        div1.appendChild(createBalanceTitle());
-
-    } else if (accountType == "Credit Card") {
+    if (accountType === "Credit Card" || accountType === "CREDIT") {
 
         div1.appendChild(createCardTitle());
 
         div1.appendChild(createAmountTitle());
 
-    } else if (accountType == "Checking") {
+    } else {
 
         div1.appendChild(createAmountTitle());
 
@@ -589,14 +584,14 @@ function getTransBorder() {
 Testing function to get account balance
 */
 var getAccountBalance = function (temp, accountType) {
-    var balance = document.getElementById("balance");
+    var balanceElement = document.getElementById("balance");
     var numBalance;
-    if (accountType == "Savings" || accountType == "Checking") {
-        numBalance = temp["balance"]
-    } else if (accountType == "Credit Card") {
-        numBalance = temp["current-balance"]
+    if (accountType === "Savings" || accountType === "Checking" || accountType === "SAVINGS" || accountType === "CHECKINGS") {
+        numBalance = temp["balance"] || temp["accountInfo"]["balance"]
+    } else if (accountType === "Credit Card" || accountType === "CREDIT") {
+        numBalance = temp["current-balance"] || temp["accountInfo"]["balance"]
     }
-    balance.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
+    balanceElement.innerHTML = '<span class="currency">' + currency + '</span>' + addCommasToNumber(Math.floor(numBalance)) + '<span class="cents">' + getCents(numBalance) + '</span>';
 }
 
 /*
@@ -625,15 +620,15 @@ var getAccountBackground = function () {
 
 
 var addCreditCardTransaction = function (day, month, year, hour, second, logourl, desc, category, card, amount) {
-    transactions.push(new CreditCardTransaction([day, month, year, hour, second], logourl, desc, category, card, amount));
+    transactions.push(new CreditCardTransaction(new Date(year, month, day, hour, second), logourl, desc, category, card, amount));
 }
 
 var addSavingsTransaction = function (day, month, year, hour, second, logourl, desc, category, balance, amount) {
-    transactions.push(new SavingsTransaction([day, month, year, hour, second], logourl, desc, category, balance, amount));
+    transactions.push(new SavingsTransaction(new Date(year, month, day, hour, second), logourl, desc, category, balance, amount));
 }
 
 var addCheckingTransaction = function (day, month, year, hour, second, logourl, desc, category, balance, amount) {
-    transactions.push(new SavingsTransaction([day, month, year, hour, second], logourl, desc, category, balance, amount));
+    transactions.push(new CheckingTransaction(new Date(year, month, day, hour, second), logourl, desc, category, balance, amount));
 }
 
 /*
@@ -670,6 +665,18 @@ setUp function
 - sets up visuals for page
 */
 var setUp = function () {
+    if (transactions.length === 0) {
+        const holder = document.getElementById("transactionholder");
+        const msg = document.createElement("p");
+        msg.innerText = "No transactions found for this account.";
+        msg.style.textAlign = "center";
+        msg.style.marginTop = "50px";
+        msg.style.color = "#666";
+        msg.style.fontSize = "1.2rem";
+        holder.appendChild(msg);
+        return;
+    }
+    
     getTransBorder();
     var currentYear = transactions[0].getYear();
     printYearGap(currentYear);
@@ -698,28 +705,26 @@ var setUp = function () {
     }
 }
 
-/*
-Testing function 
-*/
-var tempAdderToTransactions = function () { 
-    if (accountType == "Credit Card") {
-        addCreditCardTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, 12.45);
-        addCreditCardTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 12345, 9.34);
-        addCreditCardTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 12345, -23.08);
-    } else if (accountType == "Savings") {
-        addSavingsTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 1030.04, -15) 
-        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 1035.04, -12.00)
-        addSavingsTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 1047.04, 10.00) 
-    } else if (accountType == "Checking") {
-        addCheckingTransaction(15, 4, 2025, 11, 33, "https://i.imgur.com/oyD6it3.png", "Casey's", "Gas", 456.07, -20.00)
-        addCheckingTransaction(7, 8, 2024, 12, 43, "https://i.imgur.com/oyD6it3.png", "Mcdonald's", "Restaurant", 476.07, -12.00) 
-        addCheckingTransaction(4, 2, 2024, 4, 12, "https://i.imgur.com/oyD6it3.png", "Cash Deposit at Bank", "Deposit", 488.07, 50.00) 
-    }
-}
-
 var loadInTransactions = function (accountID) {
-    // use accountID to get transactions from backend
-    // use addSavingsTransations, addCheckingTransations, etc.
+    fetch('http://localhost:8080/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(accountID)
+    })
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(t => {
+            if (accountType === "SAVINGS" || accountType === "Savings") {
+                transactions.push(new SavingsTransaction(t.date, t.logoUrl, t.transactionDescription, t.category, t.balanceAfter, t.amount));
+            } else if (accountType === "CHECKINGS" || accountType === "Checking") {
+                transactions.push(new CheckingTransaction(t.date, t.logoUrl, t.transactionDescription, t.category, t.balanceAfter, t.amount));
+            } else if (accountType === "CREDIT" || accountType === "Credit Card") {
+                transactions.push(new CreditCardTransaction(t.date, t.logoUrl, t.transactionDescription, t.category, "Card", t.amount, t.balanceAfter));
+            }
+        });
+        setUp();
+    })
+    .catch(err => console.error("Error loading transactions:", err));
 }
 
 /*
@@ -731,78 +736,21 @@ var loadInAccountInfo = function () {
     var headerName = document.getElementById("headerName");
     var temp = JSON.parse(localStorage.getItem("account"));
     if (temp != undefined) {
-        accountType = temp["type"]
+        accountType = temp["type"] || temp["accountType"];
         getAccountBalance(temp, accountType);
         headerName.innerHTML = accountType;
-        if (accountType != "Rewards") {
-            accountID = temp["accountID"]
+        
+        var accountID = localStorage.getItem("accountID");
+        if (accountID) {
             loadInTransactions(accountID)
-        } else {
-            rewardsID = temp["rewardsID"]
         }
-
-        tempAdderToTransactions(accountType) // testing function
     }
-    setUp();
 }
-
-
 
 loadInAccountInfo();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-Checking
-- Date transaction happened
-- Image
-- Description of where money goes to/comes from
-    - Company
-    - Location (if useful)
-    - Last 4 digits of Account # (if coming from a bank)
-- Category:
-    - Check, Deposit, Debit Card, Transfer
-- Amount of transaction
-- new Balance
-- Check info (if check was used for transaction)
-
-
-Savings
-- Date transaction happened
-- Image
-- Description of where money goes to/comes from
-    - Company
-    - Interest (if it's the interest from that account)
-    - Last 4 digits of Account # (if coming from a bank)
-- Category:
-    - Interest, Withdraw, Deposit, Transfer
-- Amount of transaction
-- new Balance
-
-
-Credit Card
-- Date transaction happened
-- Image
-- Description of where money goes to/comes from
-    - Company
-    - Location (if useful)
-    - Last 4 digits of Account # (if coming from a bank)
-- Category:
-    - Examples: Gas, Restaurant, Payment, etc.
-- Card number
-- Amount of transaction
-
-*/
+function signOut() {
+    localStorage.removeItem("userUUID");
+    localStorage.removeItem("account");
+    window.location = "../home/home.html";
+}

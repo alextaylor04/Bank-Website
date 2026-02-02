@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Mizzou Bank - Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../accounts/accounts.css">
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <div class="menu-container nav-menu">
+        <div class="logo-container">
+            <img src="../Images/logo.png" alt="Bank Logo">
+        </div>
+        <nav class="nav-links">
+            <a href="../home/home.html" class="nav-menu">Home</a>
+            <a href="../accounts/accounts.html" class="nav-menu">Accounts</a>
+            <a href="../profile/profile.html" class="home">Profile</a>
+            <a href="../alerts/alerts.html" class="nav-menu">Alerts</a>
+            <a href="../settings/settings.html" class="nav-menu">Settings</a>
+            <a href="#" class="nav-menu" onclick="signOut()">Sign Out</a>
+        </nav>
+    </div>
+
+    <div class="profile-container">
+        <h1>User Profile</h1>
+        <div id="profile-info" class="profile-card">
+            <p>Loading profile...</p>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
+</body>
+</html>

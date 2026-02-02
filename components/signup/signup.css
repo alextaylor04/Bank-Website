@@ -1,0 +1,16 @@
+.loginwrapper {
+    height: auto;
+    padding: 40px;
+}
+
+.input-box {
+    margin-bottom: 20px;
+}
+
+.error {
+    color: #ff4d4d;
+    font-size: 14px;
+    display: none;
+    margin-top: -15px;
+    margin-bottom: 15px;
+}

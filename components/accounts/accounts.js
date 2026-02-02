@@ -1,4 +1,3 @@
-
 /*
 
 Backend:
@@ -26,7 +25,7 @@ function addCommasToNumber(number) {
 }
 function getCents (number) {
   var cents = Math.round((number - Math.floor(number)) * 100);
-  if ((cents).toString.length === 1) {
+  if ((cents).toString().length === 1) {
     cents = cents + "0";
   }
   return cents;
@@ -99,7 +98,7 @@ var createAccountonScreen = function (name, balance, type, backgroundOption, hid
 
     const p2 = document.createElement("p");
 
-    const node2 = document.createTextNode(name);
+    const node2 = document.createTextNode(name); // 'name' here will be the nickname
 
     p2.appendChild(node2);
 
@@ -175,7 +174,8 @@ var createAccountDisplay = function () {
       break;
   }
   accountList[accountcounter]["backColor"] = backgroundNum;
-  createAccountonScreen(type, balance, shortNamesForAccounts[type], backgroundNum, "show");
+  const displayName = accountList[accountcounter]["nickname"] || type;
+  createAccountonScreen(displayName, balance, shortNamesForAccounts[type], backgroundNum, "show");
   accountcounter++;
 }
 
@@ -208,11 +208,15 @@ var modal2 = document.getElementById("myModal2");
 var close = document.getElementsByClassName("close")[0];
 var close2 = document.getElementsByClassName("close")[1];
 
-close.onclick = function() {
-  modal.style.display = "none";
+if (close) {
+    close.onclick = function() {
+        modal.style.display = "none";
+    }
 }
-close2.onclick = function() {
-  modal2.style.display = "none";
+if (close2) {
+    close2.onclick = function() {
+        modal2.style.display = "none";
+    }
 }
 
 // When the user clicks anywhere outside of the modal, close it
@@ -224,24 +228,26 @@ window.onclick = function(event) {
   }
   if (event.target != document.getElementsByClassName("custom-amount")[0]) {
     const element = document.getElementsByClassName("custom-amount")[0];
-    element.placeholder = "0.00";
-    if (mode === "modal") {
-      updateCustomAmount();
-    }
-    if (element.value.length === 0 && payOptions["status"] === "custom") {
-      updatePayButton("remove");
-      payOptions["status"] = "";
-      payOptions["payBalance"] = 0;
+    if (element) {
+        element.placeholder = "0.00";
+        if (mode === "modal") {
+          updateCustomAmount();
+        }
+        if (element.value.length === 0 && payOptions["status"] === "custom") {
+          updatePayButton("remove");
+          payOptions["status"] = "";
+          payOptions["payBalance"] = 0;
+        }
     }
   }
 }
 
 var updateCustomAmount = function () {
   var element = document.getElementsByClassName("custom-amount")[0]
-  if (element.value.length > 0 && element.value.includes(".") === false) {
+  if (element && element.value.length > 0 && element.value.includes(".") === false) {
     element.value = element.value + ".00";
   }
-  if (element.value.length > 0) {
+  if (element && element.value.length > 0) {
     var customValue = Number(element.value);
     if (customValue > 0) {
       if ((Math.floor(customValue * 100) / 100) <= accountList[accountnum]["current-balance"]) {
@@ -276,11 +282,24 @@ var openModal = function (openvar) {
     resetBox(0);
     resetBox(1);
     updatePayButton("remove");
+
+    // Populate the 'Pay From' dropdown
+    const select = document.getElementById("sourceAccountSelect");
+    select.innerHTML = "";
+    accountList.forEach((acc, index) => {
+        if (acc.type !== "Credit Card" && acc.type !== "Rewards") {
+            const opt = document.createElement("option");
+            opt.value = acc.accountID;
+            opt.innerText = (acc.nickname || acc.type) + " (..." + (acc.accountID.slice(-4)) + ")";
+            select.appendChild(opt);
+        }
+    });
+
     var statement = document.getElementById("statement");
     var current = document.getElementById("current");
     var custom_amount = document.getElementsByClassName("custom-amount")[0];
     custom_amount.value = "";
-    statement.innerText = "$" + accountList[accountnum]["statement-balance"];
+    statement.innerText = "$" + (accountList[accountnum]["statement-balance"] || 0);
     current.innerText = "$" + accountList[accountnum]["current-balance"];
   } else if (openvar === 2) {
     modal2.style.display = "block";
@@ -312,7 +331,9 @@ var customAmount = function () {
 
 var resetBox = function (num) {
   var otherbox = document.getElementsByClassName("moneybox")[num];
-  otherbox.classList.remove("selected");
+  if (otherbox) {
+      otherbox.classList.remove("selected");
+  }
 }
 
 /*
@@ -321,10 +342,12 @@ updatePayButton
 */
 var updatePayButton = function (conString) {
   var payButton = document.getElementsByClassName("payButton")[0];
-  if (conString === "add") {
-    payButton.classList.add("green_payButton");
-  } else {
-    payButton.classList.remove("green_payButton");
+  if (payButton) {
+      if (conString === "add") {
+        payButton.classList.add("green_payButton");
+      } else {
+        payButton.classList.remove("green_payButton");
+      }
   }
 }
 
@@ -350,21 +373,33 @@ payCredit function
 - controls the logic when you press the "Pay" button inside the Pay Modal
 */
 var payCredit = function () {
-  if (payOptions["payBalance"] > 0 && payOptions["payBalance"] <= accountList[accountnum]["current-balance"]) {
-    closeModal(1);
-      if (payOptions["payBalance"] >= accountList[accountnum]["statement-balance"]) {
-        accountList[accountnum]["statement-balance"] = 0;
-      } else {
-        accountList[accountnum]["statement-balance"] -= payOptions["payBalance"];
-      }
-      accountList[accountnum]["current-balance"] -= payOptions["payBalance"];
-      updateCreditCardAccountDisplay(accountnum);
-      updateCreditCardAccountBalanceInDatabase()
-    } else {
+  const amount = payOptions["payBalance"];
+  const sourceId = document.getElementById("sourceAccountSelect").value;
+  const targetId = accountList[accountnum]["accountID"];
+
+  if (amount > 0 && amount <= accountList[accountnum]["current-balance"]) {
+      fetch('http://localhost:8080/api/pay-bill', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              sourceAccountId: sourceId,
+              targetAccountId: targetId,
+              amount: amount
+          })
+      })
+      .then(response => {
+          if (response.ok) {
+              closeModal(1);
+              location.reload(); // Refresh to show new balances and transactions
+          } else {
+              alert("Payment failed. Check your balance.");
+          }
+      });
+  } else {
       if (payOptions["status"] != "") {
-      alert("Can't pay amount.")
+        alert("Can't pay amount.")
       }
-    }
+  }
 }
 
 /*
@@ -398,8 +433,8 @@ loadInCreditCardAccount function
 - Adds a credit card account with a certain current_balance and statement_balance to the front-end accountList
 and displays it.
 */
-var loadInCreditCardAccount = function (current_balance, statement_balance, accountID) {
-  accountList.push({"type": "Credit Card", "current-balance": current_balance, "statement-balance": statement_balance, "accountID": accountID})
+var loadInCreditCardAccount = function (current_balance, statement_balance, accountID, nickname) {
+  accountList.push({"type": "Credit Card", "current-balance": current_balance, "statement-balance": statement_balance, "accountID": accountID, "nickname": nickname})
   createAccountDisplay();
 }
 
@@ -408,8 +443,8 @@ loadInSavingsAccount function
 - Adds a savings account with a certain balance to the front-end accountList
 and displays it.
 */
-var loadInSavingsAccount = function (balance, accountID) {
-  accountList.push({"type": "Savings", "balance": balance, "accountID": accountID})
+var loadInSavingsAccount = function (balance, accountID, nickname) {
+  accountList.push({"type": "Savings", "balance": balance, "accountID": accountID, "nickname": nickname})
   createAccountDisplay();
 }
 
@@ -418,8 +453,8 @@ loadInCheckingAccount function
 - Adds a checking account with a certain balance to the front-end accountList
 and displays it.
 */
-var loadInCheckingAccount = function (balance, accountID) {
-  accountList.push({"type": "Checking", "balance": balance, "accountID": accountID})
+var loadInCheckingAccount = function (balance, accountID, nickname) {
+  accountList.push({"type": "Checking", "balance": balance, "accountID": accountID, "nickname": nickname})
   createAccountDisplay();
 }
 
@@ -436,77 +471,35 @@ var loadInRewardsAccount = function (rewardsID) {
 
 
 /*
-createCreditCardAccount function
-- creates a credit card account and then has it loaded in the frontend
-*/
-var createCreditCardAccount = function (current_balance, statement_balance) {
-  // add to backend
-  accountID = 5 // temporary accountID
-  loadInCreditCardAccount(current_balance, statement_balance, accountID)
-}
-
-/*
-createSavingsAccount function
-- creates a savings account and then has it loaded in the frontend
-*/
-var createSavingsAccount = function (balance) {
-  // add to backend
-  accountID = 5 // temporary accountID
-  loadInSavingsAccount(balance, accountID)
-}
-
-/*
-createCheckingAccount function
-- creates a checking account and then has it loaded in the frontend
-*/
-var createCheckingAccount = function (balance) {
-  // add to backend
-  accountID = 5 // temporary accountID
-  loadInCheckingAccount(balance, accountID)
-}
-
-/*
-createRewardsAccount function
-- creates a rewards account and then has it loaded in the frontend
-*/
-var createRewardsAccount = function () {
-  // add to backend
-  rewardsID = 5 // temporary rewardsID
-  loadInRewardsAccount(rewardsID)
-}
-
-
-
-/*
 addAccount function
 - function that is run when the user wants to add a new account. Makes a rewards account if the user is adding a 
 credit card account and does not already have a rewards account.
 */
 var addAccount = function (type) {
   deleteHiddenAccount()
+  const nickname = document.getElementById("accountNickname").value;
   closeModal(2);
-  if (type == "Savings") {
-    createSavingsAccount(200.00)
-  } else if (type == "Checking") {
-    createCheckingAccount(150.00)
-  } else if (type == "Credit Card") {
-    createCreditCardAccount(100.00, 50.00)
-  }
-  if (AccountListContainsRewards() === false && type === "Credit Card") {
-    createRewardsAccount()
-  }
-  if (accountList.length % 2 != 0) {
-    createHiddenAccount()
-  }
-}
-
-/*
-makeTestingAccounts function
-- testing function for displaying accounts
-*/
-var makeTestingAccounts = function () {
-  createSavingsAccount(100.00)
-  createCheckingAccount(200.00)
+  
+  const userUUID = localStorage.getItem("userUUID");
+  
+  // Map display names to Backend Enum names
+  let backendType = type.toUpperCase();
+  if (backendType === "CHECKING") backendType = "CHECKINGS";
+  if (backendType === "CREDIT CARD") backendType = "CREDIT";
+  
+  fetch('http://localhost:8080/openaccount', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      uuid: userUUID,
+      accountType: backendType,
+      nickname: nickname
+    })
+  })
+  .then(response => response.json())
+  .then(account => {
+      location.reload(); 
+  });
 }
 
 /*
@@ -514,35 +507,46 @@ loadInAccounts
 - function that is called when the program starts up or refreshes. Loads in all 
 */
 var loadInAccounts = function () {
-  // get accounts from back-end 
-  // - use loadInAccount functions
-  makeTestingAccounts() // just for testing front-end
-  if (accountList.length % 2 != 0) {
-    createHiddenAccount()
+  const userUUID = localStorage.getItem("userUUID");
+  if (!userUUID) {
+      window.location = "../login/login.html";
+      return;
   }
+
+  fetch('http://localhost:8080/user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userUUID)
+  })
+  .then(response => response.json())
+  .then(user => {
+    const accounts = user.accounts;
+    accounts.forEach(acc => {
+        const type = acc.accountType; // e.g. "SAVINGS"
+        const balance = acc.accountInfo.balance;
+        const id = acc.id;
+        const nickname = acc.nickname;
+
+        if (type === "SAVINGS") {
+            loadInSavingsAccount(balance, id, nickname);
+        } else if (type === "CHECKINGS") {
+            loadInCheckingAccount(balance, id, nickname);
+        } else if (type === "CREDIT") {
+            loadInCreditCardAccount(balance, 0, id, nickname);
+        }
+    });
+
+    if (accountList.length % 2 != 0) {
+      createHiddenAccount()
+    }
+  })
+  .catch(err => console.error("Error loading accounts:", err));
 }
-
-
 
 loadInAccounts()
 
-
-
-
-/*
-
-HTML Code for an Account Display
-
-<div class="account1">
-    <div class="accountinfo">
-        <p class="heading">Savings</p>
-        <p class="balance"><span class="currency">$</span>12,000<span class="cents">00</span></p>
-        <p class="balance-info">AVAILABLE BALANCE</p>
-    </div>
-    <div class="accountbutton">
-        <button><p>View Rewards</p></button>
-    </div>
-</div>
-*/
-
-    
+function signOut() {
+    localStorage.removeItem("userUUID");
+    localStorage.removeItem("account");
+    window.location = "../home/home.html";
+}

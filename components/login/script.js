@@ -1,32 +1,51 @@
-
 document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
     
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    // Hardcoded credentials
-    const validUsername = "user";
-    const validPassword = "123pass";
+    
     resetErrors();
-    console.log(username === validUsername && password === validPassword);
-    if (username === validUsername && password === validPassword) {
-       window.location = "../accounts/accounts.html";
-    } else if (username != validUsername) { // username does not exist
-        const usernameHolder = document.getElementById("usernameholder");
-        usernameHolder.classList.remove("normalBox");
-        usernameHolder.classList.add("errorBottom");
-        const passwordHolder = document.getElementById("passwordholder");
-        passwordHolder.classList.remove("normalBox");
-        passwordHolder.classList.add("errorTop");
-        const error = document.getElementById("usernameError");
-        error.style.display = "block";
-    } else if (password != validPassword) { // password incorrect
-        const passwordHolder = document.getElementById("passwordholder");
-        passwordHolder.classList.remove("normalBox");
-        passwordHolder.classList.add("errorBottom");
-        const error = document.getElementById("passwordError");
-        error.style.display = "block";
-    }
+
+    // Call the backend login endpoint
+    fetch('http://localhost:8080/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.authorized) {
+            // Save user UUID for other pages
+            localStorage.setItem("userUUID", data.responseUUID);
+            window.location = "../accounts/accounts.html";
+        } else {
+            if (data.message === "User not found.") {
+                const usernameHolder = document.getElementById("usernameholder");
+                usernameHolder.classList.remove("normalBox");
+                usernameHolder.classList.add("errorBottom");
+                const passwordHolder = document.getElementById("passwordholder");
+                passwordHolder.classList.remove("normalBox");
+                passwordHolder.classList.add("errorTop");
+                const error = document.getElementById("usernameError");
+                error.style.display = "block";
+            } else if (data.message === "Incorrect Password.") {
+                const passwordHolder = document.getElementById("passwordholder");
+                passwordHolder.classList.remove("normalBox");
+                passwordHolder.classList.add("errorBottom");
+                const error = document.getElementById("passwordError");
+                error.style.display = "block";
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error during login:', error);
+        alert('Could not connect to the bank server.');
+    });
 });
 
 var resetErrors = function () {
@@ -63,7 +82,7 @@ window.onclick = function(event){
     var formlist = [document.getElementById('usernameholder'), document.getElementById('passwordholder')];
     var formvar = [[document.getElementById('username'), "Username"], [document.getElementById('password'), "Password"]];
     for (var i = 0; i < formlist.length; i++) {
-        if (formlist[i].contains(event.target) === false && formlist[i].contains(document.activeElement) === false){
+        if (formlist[i] && formlist[i].contains(event.target) === false && formlist[i].contains(document.activeElement) === false){
             formvar[i][0].placeholder = formvar[i][1];
         }
     }
