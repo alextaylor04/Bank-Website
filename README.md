@@ -5,4 +5,4 @@
 
 This is the frontend for our Banking Website
 
-Backend: https://github.com/tgraber4/Bank or https://github.com/alextaylor04/Banking-Application
+Backend: https://github.com/tgraber4/Bank
